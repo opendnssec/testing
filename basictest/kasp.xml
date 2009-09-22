@@ -32,7 +32,7 @@
 				<Algorithm length="2048">5</Algorithm>
 				<Lifetime>PT40M</Lifetime>
 				<Repository>softHSM</Repository>
-				<Emergency>1</Emergency>
+				<Standby>1</Standby>
 			</KSK>
 
 			<!-- Parameters for ZSK only -->
@@ -40,7 +40,7 @@
 				<Algorithm length="2048">5</Algorithm>
 				<Lifetime>PT25M</Lifetime>
 				<Repository>softHSM</Repository>
-				<Emergency>1</Emergency>
+				<Standby>1</Standby>
 			</ZSK>
 		</Keys>
 
@@ -99,7 +99,7 @@
 				<Algorithm length="2048">7</Algorithm>
 				<Lifetime>PT45M</Lifetime>
 				<Repository>softHSM</Repository>
-				<Emergency>1</Emergency>
+				<Standby>1</Standby>
 			</KSK>
 
 			<!-- Parameters for ZSK only -->
@@ -107,7 +107,7 @@
 				<Algorithm length="2048">7</Algorithm>
 				<Lifetime>PT25M</Lifetime>
 				<Repository>softHSM</Repository>
-				<Emergency>1</Emergency>
+				<Standby>1</Standby>
 			</ZSK>
 		</Keys>
 
