@@ -203,7 +203,7 @@ sub createZone {
         my $full_signer_output = "$signer_output_path/$zone_name";
         $full_signer_output =~ s/\/\//\//g;
 
-        system("ksmutil", "addzone", $zone_name, $ksm_policy, $full_config, $full_output, $full_signer_output);
+        system("ods-ksmutil zone add --zone $zone_name --policy $ksm_policy --signerconf $full_config --input $full_output --output $full_signer_output");
     }
 }
 
