@@ -1,0 +1,81 @@
+@			IN	SOA		ns1 postmaster.all.rr.org. (
+						1            ; serial number
+						3600         ; refresh   [1h]
+						600          ; retry     [10m]
+						86400        ; expire    [1d]
+						3600 )       ; min TTL   [1h]
+ns1			IN	A		10.1.0.52
+all.rr.org.		IN	NS		ns1.example.com.
+foo			IN	CNAME		ns1
+all.rr.org.		IN	MB		mb-madname.example.com
+			IN	MG		mg-mgmname.example.com
+			IN	MR		mr-newname.example.com
+; NULL not allowed in master file
+			IN	WKS		128.32.0.10 UDP who route timed domain
+foo			IN	PTR		ns1
+all.rr.org.		IN	HINFO		SUN4/110 UNIX
+			IN	MINFO		minfo-rmailbx.example.com. minfo-emailbx.example.com.
+			IN	MX		10 VENERA
+myselector._domainkey	IN	TXT		"v=DKIM1; n=Use=20DKIM; p=AwEAAZfbYw8SffZwsbrCLbC+JLErREIF6Yfe9aqsa1Pz6tpGWiLxm9rSL6/YoBvNP3UWX91YDF0JMo6lhu3UIZjITvIwDhx+RJYko9vLzaaJKXGf3ygy6z+deWoZJAV1lTY0Ltx9genboe88CSCHw9aSLkh0obN9Ck8R6zAMYR19ciM/; t=s"
+all.rr.org.		IN	RP		rp-mbox.example.com. rp-txtdname.example.com.
+			IN	AFSDB		1 afsdb-hostname.example.com.
+			IN	X25		311061700956
+			IN	ISDN		150862028003217 004
+			IN	RT		10   NET.Prime.COM.
+			IN	NSAP		0x47.0005.80.005a00.0000.0001.e133.ffffff000161.00
+67894444333322220000	IN	NSAP-PTR	host.school.de.
+all.rr.org.		IN	SIG		AAAA 5 3 3600 20040101000010 20030101123000 12345 bla.example.com. Ym9ndXMgc2lnIGRhdGEK
+			IN	KEY		256 3 1 AwEAAaFGEndNwBD9P7Q9T3XQxhb7OQXQCaEz5l6fzfYpspo0b2FVoZ6e ymxEmkg1XKoPPo5R90e3knvMlvYnB9CccA8=
+			IN	PX		10   net2.it.  PRMD-net2.ADMD-p400.C-it.
+			IN	GPOS		-32.6882 116.8652 10.0
+			IN	AAAA		2001:db8::3
+			IN	LOC		42 21 54 N 71 06 18 W -24m 30m
+			IN	EID		813F 4B7C DAB3 4217
+			IN	NIMLOC		752341 59EAC4 5780 0920
+_http._tcp		IN	SRV		0 5 80 ns1.example.com.
+all.rr.org.		IN	ATMA		39.246f.000e7c9c031200010001.000023456789.00
+			IN	NAPTR		100   10   ""  ""  "/urn:cid:.+@([^\.]+\.)(.*)$/\2/i"    .
+			IN	KX		2 rt1.example.com.
+			IN	CERT		6 0 0 FFsAyW1dVK7hIGuvhN56r26UwJx/
+			IN	A6		64 ::1234:5678:9ABC:DEF0 SUBNET-1.IP6
+frobozz			IN	DNAME		frobozz-division.acme.example.
+; SINK, could not find this one
+; OPT is a pseudo record and should not be stored in masterfiles
+all.rr.org.		IN	APL		1:192.168.32.0/21 !1:192.168.38.0/28
+sub			IN	DS		12345 3 1 123456789abcdef67890123456789abcdef67890
+all.rr.org.		IN	SSHFP		2 1 123456789abcdef67890123456789abcdef67890
+			IN	IPSECKEY	10 1 2 192.0.2.38 AQNRU3mG7TVTO2BkR47usntb102uFJtugbo6BSGvgqt4AQ==
+			IN	RRSIG		A 5 3 86400 20030322173103 (
+							20030220173103 2642 example.com.
+							oJB1W6WNGv+ldvQ3WDG0MQkg5IEhjRip8WTr
+							PYGv07h108dUKGMeDPKijVCHX3DDKdfb+v6o
+							B9wfuh3DTJXUAfI/M0zmO/zz8bW0Rznl8O3t
+							GNazPwQKkRN20XPXV6nwwfoXmJQbsLNrLfkG
+							J5D6fwFm8nN+6pBzeDQfsS3Ap3o= )
+			IN	NSEC		host.example.com. A MX RRSIG NSEC
+			IN	DNSKEY		256 3 5 ( AQPSKmynfzW4kyBv015MUG2DeIQ3
+							Cbl+BBZH4b/0PY1kxkmvHjcZc8no
+							kfzj31GajIQKY+5CptLr3buXA10h
+							WqTkF7H6RfoRqXQeogmMHfpftf6z
+							Mv1LyBUgia7za6ZEzOJBOztyvhjL
+							742iU/TpPSEDhm2SNKLijfUppn1U
+							aNvv4w== )
+			IN	DHCID		( AAIBY2/AuCccgoJbsaxcQc9TUapptP69l
+						OjxfNuVAA2kjEA= )
+ee19kl3631qol646kjjrh6lh96pduqii	IN	NSEC3	1 0 5 6467b16f6f36ba4d  13k9b8dv58kcn28us3fc0lqa60jeadp0 A RRSIG
+all.rr.org.		IN	NSEC3PARAM	1 0 5 6467b16f6f36ba4d
+			IN	HIP		( 2 200100107B1A74DF365639CC39F1D578
+						AwEAAbdxyhNuSutc5EMzxTs9LBPCIkOFH8cIvM4p
+						9+LrV4e19WzK00+CI6zBCQTdtWsuxKbWIy87UOoJTwkUs7lBu+Upr1gsNrut79ryra+bSRGQ
+						b1slImA8YVJyuIDsj7kwzG7jnERNqnWxZ48AWkskmdHaVDP4BcelrTI3rMXdXF5D
+						rvs.example.com. )
+; NINFO, could not find example
+; RKEY, could not find example
+			IN	SPF		"v=spf1 +mx a:colo.example.com/28 -all"
+; TKEY
+; TSIG
+; IXFR
+; AXFR
+; MAILB
+; MAILA
+			IN	DLV		12345 3 1 123456789abcdef67890123456789abcdef67890
