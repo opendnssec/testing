@@ -6,11 +6,13 @@
 						3600 )       ; min TTL   [1h]
 ns1			IN	A		10.1.0.52
 all.rr.org.		IN	NS		ns1.example.com.
+; MD, not supported (Obsoleted)
+; MF, not supported (Obsoleted)
 foo			IN	CNAME		ns1
 all.rr.org.		IN	MB		mb-madname.example.com
 			IN	MG		mg-mgmname.example.com
 			IN	MR		mr-newname.example.com
-; NULL not allowed in master file
+; NULL, not allowed in master file
 			IN	WKS		128.32.0.10 UDP who route timed domain
 foo			IN	PTR		ns1
 all.rr.org.		IN	HINFO		SUN4/110 UNIX
@@ -30,17 +32,18 @@ all.rr.org.		IN	SIG		AAAA 5 3 3600 20040101000010 20030101123000 12345 bla.examp
 			IN	GPOS		-32.6882 116.8652 10.0
 			IN	AAAA		2001:db8::3
 			IN	LOC		42 21 54 N 71 06 18 W -24m 30m
+; NXT, not supported (Obsoleted)
 			IN	EID		813F 4B7C DAB3 4217
 			IN	NIMLOC		752341 59EAC4 5780 0920
 _http._tcp		IN	SRV		0 5 80 ns1.example.com.
-; ATMA not supported by OpenDNSSEC (no RFC)
+; ATMA, not supported (no RFC)
 all.rr.org.		IN	NAPTR		100   10   ""  ""  "/urn:cid:.+@([^\.]+\.)(.*)$/\2/i"    .
 			IN	KX		2 rt1.example.com.
 			IN	CERT		6 0 0 FFsAyW1dVK7hIGuvhN56r26UwJx/
-			IN	A6		64 ::1234:5678:9ABC:DEF0 SUBNET-1.IP6
+; A6, not supported (Experimental)
 frobozz			IN	DNAME		frobozz-division.acme.example.
-; SINK, could not find this one
-; OPT is a pseudo record and should not be stored in masterfiles
+; SINK, could not find example
+; OPT, not allowed in master file
 all.rr.org.		IN	APL		1:192.168.32.0/21 !1:192.168.38.0/28
 sub			IN	DS		12345 3 1 123456789abcdef67890123456789abcdef67890
 all.rr.org.		IN	SSHFP		2 1 123456789abcdef67890123456789abcdef67890
@@ -72,11 +75,15 @@ all.rr.org.		IN	NSEC3PARAM	1 0 5 6467b16f6f36ba4d
 ; NINFO, could not find example
 ; RKEY, could not find example
 			IN	SPF		"v=spf1 +mx a:colo.example.com/28 -all"
-; TKEY
-; TSIG
-; IXFR
-; AXFR
-; MAILB
-; MAILA
+; UINFO, ?
+; UID, ?
+; GID, ?
+; UNSPEC, ?
+; TKEY, not allowed in master file
+; TSIG, not allowed in master file
+; IXFR, not allowed in master file
+; AXFR, not allowed in master file
+; MAILB, not allowed in master file
+; MAILA, not allowed in master file (Obsoleted)
 ; TA, could not find example
 			IN	DLV		12345 3 1 123456789abcdef67890123456789abcdef67890
