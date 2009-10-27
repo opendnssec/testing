@@ -33,8 +33,8 @@ all.rr.org.		IN	SIG		AAAA 5 3 3600 20040101000010 20030101123000 12345 bla.examp
 			IN	EID		813F 4B7C DAB3 4217
 			IN	NIMLOC		752341 59EAC4 5780 0920
 _http._tcp		IN	SRV		0 5 80 ns1.example.com.
-all.rr.org.		IN	ATMA		39.246f.000e7c9c031200010001.000023456789.00
-			IN	NAPTR		100   10   ""  ""  "/urn:cid:.+@([^\.]+\.)(.*)$/\2/i"    .
+; ATMA not supported by OpenDNSSEC (no RFC)
+all.rr.org.		IN	NAPTR		100   10   ""  ""  "/urn:cid:.+@([^\.]+\.)(.*)$/\2/i"    .
 			IN	KX		2 rt1.example.com.
 			IN	CERT		6 0 0 FFsAyW1dVK7hIGuvhN56r26UwJx/
 			IN	A6		64 ::1234:5678:9ABC:DEF0 SUBNET-1.IP6
