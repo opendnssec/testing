@@ -43,17 +43,17 @@ foo.all.rr.org.		IN	CNAME		ns1.all.rr.org.
 ; MB
 ; 7 a mailbox domain name (EXPERIMENTAL)
 ; [RFC1035]
-all.rr.org.		IN	MB		mb-madname.example.com
+all.rr.org.		IN	MB		mb-madname.example.com.
 
 ; MG
 ; 8 a mail group member (EXPERIMENTAL)
 ; [RFC1035]
-all.rr.org.		IN	MG		mg-mgmname.example.com
+all.rr.org.		IN	MG		mg-mgmname.example.com.
 
 ; MR
 ; 9 a mail rename domain name (EXPERIMENTAL)
 ; [RFC1035]
-all.rr.org.		IN	MR		mr-newname.example.com
+all.rr.org.		IN	MR		mr-newname.example.com.
 
 ; NULL
 ; 10 a null RR (EXPERIMENTAL)
@@ -83,7 +83,7 @@ all.rr.org.		IN	MINFO		minfo-rmailbx.example.com. minfo-emailbx.example.com.
 ; MX
 ; 15 mail exchange
 ; [RFC1035]
-all.rr.org.		IN	MX		10 VENERA
+all.rr.org.		IN	MX		10 VENERA.all.rr.org.
 
 ; TXT
 ; 16 text strings
