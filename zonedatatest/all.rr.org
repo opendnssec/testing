@@ -28,12 +28,12 @@ all.rr.org.		IN	NS		ns1.example.com.
 ; MD
 ; 3 a mail destination (Obsolete - use MX)
 ; [RFC1035]
-; Not supported by OpenDNSSEC (Obsoloted)
+; Not supported by OpenDNSSEC (Obsoleted)
 
 ; MF
 ; 4 a mail forwarder (Obsolete - use MX)
 ; [RFC1035]
-; Not supported by OpenDNSSEC (Obsoloted)
+; Not supported by OpenDNSSEC (Obsoleted)
 
 ; CNAME
 ; 5 the canonical name for an alias
@@ -123,7 +123,7 @@ all.rr.org.		IN	NSAP		0x47.0005.80.005a00.0000.0001.e133.ffffff000161.00
 ; NSAP-PTR
 ; 23 for domain name pointer, NSAP style
 ; [RFC1348] 
-67894444333322220000.all.rr.org.	IN	NSAP-PTR	host.school.de.
+; Not supported by OpenDNSSEC (Obsoleted)
 
 ; SIG
 ; 24 for security signature
@@ -208,7 +208,7 @@ frobozz.all.rr.org.	IN	DNAME		frobozz-division.acme.example.
 ; SINK
 ; 40 SINK
 ; [Eastlake]
-; Do we support this one? Could not find an example.
+; Not supported by OpenDNSSEC (No RFC)
 
 ; OPT
 ; 41 OPT
@@ -288,21 +288,22 @@ all.rr.org.		IN	NSEC3PARAM	1 0 5 6467b16f6f36ba4d
 ; HIP
 ; 55 Host Identity Protocol
 ; [RFC5205]
-all.rr.org.		IN	HIP		( 2 200100107B1A74DF365639CC39F1D578
-						AwEAAbdxyhNuSutc5EMzxTs9LBPCIkOFH8cIvM4p
-						9+LrV4e19WzK00+CI6zBCQTdtWsuxKbWIy87UOoJTwkUs7lBu+Upr1gsNrut79ryra+bSRGQ
-						b1slImA8YVJyuIDsj7kwzG7jnERNqnWxZ48AWkskmdHaVDP4BcelrTI3rMXdXF5D
-						rvs.example.com. )
+; Not supported by OpenDNSSEC (not implemented in LDNS)
+; all.rr.org.		IN	HIP		( 2 200100107B1A74DF365639CC39F1D578
+;						AwEAAbdxyhNuSutc5EMzxTs9LBPCIkOFH8cIvM4p
+;						9+LrV4e19WzK00+CI6zBCQTdtWsuxKbWIy87UOoJTwkUs7lBu+Upr1gsNrut79ryra+bSRGQ
+;						b1slImA8YVJyuIDsj7kwzG7jnERNqnWxZ48AWkskmdHaVDP4BcelrTI3rMXdXF5D
+;						rvs.example.com. )
 
 ; NINFO
 ; 56 NINFO
 ; [Reid]
-; Do we support this one? Could not find an example.
+; Not supported by OpenDNSSEC (No RFC)
 
 ; RKEY
 ; 57 RKEY
 ; [Reid]
-; Do we support this one? Could not find an example.
+; Not supported by OpenDNSSEC (No RFC)
 
 ; Unassigned
 ; 58-98
@@ -376,7 +377,7 @@ all.rr.org.		IN	SPF		"v=spf1 +mx a:colo.example.com/28 -all"
 ; TA
 ; 32768   DNSSEC Trust Authorities
 ; [Weiler]
-; Do we support this one? Could not find an example.
+; Not supported by OpenDNSSEC (No RFC)
 
 ; DLV
 ; 32769   DNSSEC Lookaside Validation
