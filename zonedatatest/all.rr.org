@@ -63,7 +63,7 @@ all.rr.org.		IN	MR		mr-newname.example.com.
 ; WKS
 ; 11 a well known service description
 ; [RFC1035]
-all.rr.org.		IN	WKS		128.32.0.10 UDP who route timed domain
+; Not supported by OpenDNSSEC (Obsoleted?)
 
 ; PTR
 ; 12 a domain name pointer
@@ -218,7 +218,7 @@ frobozz.all.rr.org.	IN	DNAME		frobozz-division.acme.example.
 ; APL
 ; 42 APL
 ; [RFC3123]
-all.rr.org.		IN	APL		1:192.168.32.0/21 !1:192.168.38.0/28
+; Not supported by OpenDNSSEC (Experimental)
 
 ; DS
 ; 43 Delegation Signer
