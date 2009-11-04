@@ -128,12 +128,12 @@ all.rr.org.		IN	NSAP		0x47.0005.80.005a00.0000.0001.e133.ffffff000161.00
 ; SIG
 ; 24 for security signature
 ; [RFC4034][RFC3755][RFC2535]
-all.rr.org.		IN	SIG		AAAA 5 3 3600 20040101000010 20030101123000 12345 bla.example.com. Ym9ndXMgc2lnIGRhdGEK
+; RRSIG record used now
 
 ; KEY
 ; 25 for security key
 ; [RFC4034][RFC3755][RFC2535]
-all.rr.org.		IN	KEY		256 3 1 AwEAAaFGEndNwBD9P7Q9T3XQxhb7OQXQCaEz5l6fzfYpspo0b2FVoZ6e ymxEmkg1XKoPPo5R90e3knvMlvYnB9CccA8=
+; DNSKEY record used now
 
 ; PX
 ; 26 X.400 mail mapping information
@@ -143,7 +143,7 @@ all.rr.org.		IN	PX		10   net2.it.  PRMD-net2.ADMD-p400.C-it.
 ; GPOS
 ; 27 Geographical Position
 ; [RFC1712]
-all.rr.org.		IN	GPOS		-32.6882 116.8652 10.0
+; obsoleted by LOC record
 
 ; AAAA
 ; 28 IP6 Address
@@ -163,12 +163,12 @@ all.rr.org.		IN	LOC		42 21 54 N 71 06 18 W -24m 30m
 ; EID
 ; 31 Endpoint Identifier
 ; [Patton]
-all.rr.org.		IN	EID		813F 4B7C DAB3 4217
+; Not an RFC
 
 ; NIMLOC
 ; 32 Nimrod Locator
 ; [Patton]
-all.rr.org.		IN	NIMLOC		752341 59EAC4 5780 0920
+; Not an RFC
 
 ; SRV
 ; 33 Server Selection
