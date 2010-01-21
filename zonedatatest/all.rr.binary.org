@@ -183,7 +183,7 @@ _http._tcp.all.rr.binary.org.	IN	SRV		0 5 80 ns1.example.com.
 ; NAPTR
 ; 35 Naming Authority Pointer
 ; [RFC2915][RFC2168]
-all.rr.binary.org.		IN	NAPTR		100   10   ""  ""  "/urn:cid:.+@([^\.]+\.)(.*)$/\2/i"    .
+all.rr.binary.org.		IN	NAPTR		100   10   ""  ""  "/urn:cid:.+@([^\\.]+\\.)(.*)$/\\2/i"    .
 
 ; KX
 ; 36 Key Exchanger
