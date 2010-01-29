@@ -1,4 +1,5 @@
 ; Information from http://www.iana.org/assignments/dns-parameters
+$ORIGIN all.rr.binary.org.
 
 ; TYPE
 ; Value and meaning
