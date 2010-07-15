@@ -54,4 +54,5 @@ dnssec.example.com.	86400	IN	CNAME	comp.example.com.
 kabinettet.example.com.	86400	IN	CNAME	ns1.example.com.
 goto80.example.com.	86400	IN	CNAME	ns1.example.com.
 link-1000.example.com.	86400	IN	AAAA	2001:db8:85a3::8a2e:370:7334
+0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0         IN      PTR     ptr.example.com.
 *.res.example.com.	86400	IN	TXT	"data"
