@@ -154,7 +154,7 @@ all.rr.org.		IN	AAAA		2001:db8::3
 ; LOC
 ; 29 Location Information
 ; [RFC1876]
-all.rr.org.		IN	LOC		42 21.5 54 N 71.2 06 18 W -24m 30m
+all.rr.org.		IN	LOC		42 21 54.5 N 71 06 18.3 W -24m 30m
 
 ; NXT
 ; 30 Next Domain - OBSOLETE
