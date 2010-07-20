@@ -74,6 +74,7 @@ foo.all.rr.org.		IN	PTR		ns1.all.rr.org.
 ; 13 host information
 ; [RFC1035]
 all.rr.org.		IN	HINFO		SUN4/110 UNIX
+helium				IN HINFO	"Shuttle-ST61G4 Intel PIV3000" "FreeBSD 7.0-STABLE"
 
 ; MINFO
 ; 14 mailbox or mail list information
@@ -153,7 +154,7 @@ all.rr.org.		IN	AAAA		2001:db8::3
 ; LOC
 ; 29 Location Information
 ; [RFC1876]
-all.rr.org.		IN	LOC		42 21 54 N 71 06 18 W -24m 30m
+all.rr.org.		IN	LOC		42 21.5 54 N 71.2 06 18 W -24m 30m
 
 ; NXT
 ; 30 Next Domain - OBSOLETE
