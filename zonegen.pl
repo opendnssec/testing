@@ -39,18 +39,19 @@ use Pod::Usage;
 ######################################################################
 
 sub main {
-    my $help = 0;
+    my $help         = 0;
     my $zone_name;
     my $number_zones = 0;
-    my $ttl = 3600;
-    my $number_rr = 0;
-    my $percent_ns = 0;
-    my $number_ns = 0;
-    my $percent_ds = 0;
-    my $percent_a = 0;
+    my $ttl          = 3600;
+    my $number_rr    = 0;
+    my $percent_ns   = 0;
+    my $number_ns    = 0;
+    my $percent_ds   = 0;
+    my $percent_a    = 0;
     my $percent_aaaa = 0;
     my $output_path;
-    my $add_to_ksm = 0;
+    my $add_to_ksm   = 0;
+    my $no_xml       = 0;
     my $config_path;
     my $signer_output_path;
     my $ksm_policy;
@@ -68,6 +69,7 @@ sub main {
         'paaaa=i'        => \$percent_aaaa,
         'output=s'       => \$output_path,
         'addtoksm'       => \$add_to_ksm,
+        'no-xml'         => \$no_xml,
         'config=s'       => \$config_path,
         'signeroutput=s' => \$signer_output_path,
         'policy=s'       => \$ksm_policy
@@ -151,27 +153,30 @@ sub main {
 
     my $zone_counter = 1;
     for($zone_counter = 1; $zone_counter <= $number_zones; $zone_counter++) {
-        createZone($number_zones, $zone_counter, $zone_name, $ttl, $number_rr, $percent_ns, $number_ns, $percent_ds, 
-                   $percent_a, $percent_aaaa, $output_path, $add_to_ksm, $config_path, $signer_output_path, $ksm_policy);
+        createZone($number_zones, $zone_counter, $zone_name, $ttl, $number_rr,
+		   $percent_ns, $number_ns, $percent_ds, $percent_a,
+		   $percent_aaaa, $output_path, $add_to_ksm, $config_path,
+		   $signer_output_path, $ksm_policy, $no_xml);
     }
 }
 
 sub createZone {
-    my $number_zones = shift;
-    my $zone_counter = shift;
-    my $old_zone_name = shift;
-    my $ttl = shift;
-    my $number_rr = shift;
-    my $percent_ns = shift;
-    my $number_ns = shift;
-    my $percent_ds = shift;
-    my $percent_a = shift;
-    my $percent_aaaa = shift;
-    my $output_path = shift;
-    my $add_to_ksm = shift;
-    my $config_path = shift;
+    my $number_zones       = shift;
+    my $zone_counter       = shift;
+    my $old_zone_name      = shift;
+    my $ttl                = shift;
+    my $number_rr          = shift;
+    my $percent_ns         = shift;
+    my $number_ns          = shift;
+    my $percent_ds         = shift;
+    my $percent_a          = shift;
+    my $percent_aaaa       = shift;
+    my $output_path        = shift;
+    my $add_to_ksm         = shift;
+    my $config_path        = shift;
     my $signer_output_path = shift;
-    my $ksm_policy = shift;
+    my $ksm_policy         = shift;
+    my $no_xml             = shift;
 
     my $zone_name;
     if($number_zones == 1) {
@@ -202,8 +207,10 @@ sub createZone {
         $full_output =~ s/\/\//\//g;
         my $full_signer_output = "$signer_output_path/$zone_name";
         $full_signer_output =~ s/\/\//\//g;
+	if ($no_xml) { $no_xml = '--no-xml'; } else { $no_xml = ''; }
 
-        system("ods-ksmutil zone add --zone $zone_name --policy $ksm_policy --signerconf $full_config --input $full_output --output $full_signer_output");
+	print "ods-ksmutil zone add --zone $zone_name --policy $ksm_policy --signerconf $full_config --input $full_output --output $full_signer_output $no_xml";
+        system("ods-ksmutil zone add --zone $zone_name --policy $ksm_policy --signerconf $full_config --input $full_output --output $full_signer_output $no_xml");
     }
 }
 
@@ -296,6 +303,7 @@ Options:
  --output S       Directory where the generated zones can be stored
  --addtoksm       If the zones should be added to OpenDNSSEC via the ksmutil.
                   Use with --config, --signeroutput, and --policy
+ --no-xml         Don't use the XML file with ods-ksmutil zone add
  --config S       Directory where the zone signing configuration can be stored
  --signeroutput S Directory where the signed zone will go
  --policy S       The policy that OpenDNSSEC will use to sign the zone
