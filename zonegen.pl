@@ -209,7 +209,6 @@ sub createZone {
         $full_signer_output =~ s/\/\//\//g;
 	if ($no_xml) { $no_xml = '--no-xml'; } else { $no_xml = ''; }
 
-	print "ods-ksmutil zone add --zone $zone_name --policy $ksm_policy --signerconf $full_config --input $full_output --output $full_signer_output $no_xml";
         system("ods-ksmutil zone add --zone $zone_name --policy $ksm_policy --signerconf $full_config --input $full_output --output $full_signer_output $no_xml");
     }
 }
