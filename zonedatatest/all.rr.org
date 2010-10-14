@@ -68,7 +68,7 @@ all.rr.org.		IN	MR		mr-newname.example.com.
 ; PTR
 ; 12 a domain name pointer
 ; [RFC1035]
-foo.all.rr.org.		IN	PTR		ns1.all.rr.org.
+bar.all.rr.org.		IN	PTR		ns1.all.rr.org.
 
 ; HINFO
 ; 13 host information
