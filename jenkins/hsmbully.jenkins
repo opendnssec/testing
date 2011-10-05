@@ -1,0 +1,33 @@
+[ x$NODE_NAME = "xsolaris_vm1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
+--with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
+&& make && LD_LIBRARY_PATH=/usr/local/lib \
+PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
+&& exit 0
+
+[ x$NODE_NAME = "xmaster" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
+--with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
+&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
+&& exit 0
+
+[ x$NODE_NAME = "xfreebsd1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
+--with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
+&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
+&& exit 0
+
+[ x$NODE_NAME = "xubuntu1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
+--with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
+&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
+&& exit 0
+
+[ x$NODE_NAME = "xredhat1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
+--with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
+&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
+&& exit 0
+
+[ x$NODE_NAME = "xsolaris1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
+--with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
+&& make && LD_LIBRARY_PATH=/usr/local/lib \
+PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
+&& exit 0
+
+exit 1

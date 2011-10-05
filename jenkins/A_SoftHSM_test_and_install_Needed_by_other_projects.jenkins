@@ -1,0 +1,25 @@
+[ x$NODE_NAME = "xsolaris_vm1" ] && cd $WORKSPACE/src/trunk/softHSM/ && sh autogen.sh \
+&& ./configure --prefix=$WORKSPACE && gmake && LD_LIBRARY_PATH=/usr/local/lib gmake check \
+&& gmake install && exit 0
+ 
+[ x$NODE_NAME = "xmaster" ] && cd $WORKSPACE/src/trunk/softHSM/ && sh autogen.sh \
+&& ./configure --prefix=$WORKSPACE && gmake && gmake check \
+&& gmake install && exit 0
+
+[ x$NODE_NAME = "xredhat1" ] && cd $WORKSPACE/src/trunk/softHSM/ && sh autogen.sh \
+&& ./configure --prefix=$WORKSPACE && make && LD_LIBRARY_PATH=/usr/local/lib make check \
+&& make install && exit 0
+
+[ x$NODE_NAME = "xubuntu1" ] && cd $WORKSPACE/src/trunk/softHSM/ && sh autogen.sh \
+&& ./configure --prefix=$WORKSPACE && make && make check \
+&& make install && exit 0
+
+[ x$NODE_NAME = "xsolaris1" ] && cd $WORKSPACE/src/trunk/softHSM/ && sh autogen.sh \
+&& ./configure --prefix=$WORKSPACE && gmake && gmake check \
+&& gmake install && exit 0
+
+[ x$NODE_NAME = "xfreebsd1" ] && cd $WORKSPACE/src/trunk/softHSM/ && sh autogen.sh \
+&& ./configure --prefix=$WORKSPACE && gmake && gmake check \
+&& gmake install && exit 0
+
+exit 1

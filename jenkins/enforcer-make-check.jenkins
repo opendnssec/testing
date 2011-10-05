@@ -1,0 +1,25 @@
+[ x$NODE_NAME = "xsolaris_vm1" ] && cd $WORKSPACE/src/trunk/OpenDNSSEC && sh autogen.sh \
+&& ./configure --with-database-backend=sqlite3 --with-dbname=enforcertest CFLAGS=-std=c99 \
+&& gmake && cd enforcer && gmake check && exit 0
+
+[ x$NODE_NAME = "xmaster" ] && cd $WORKSPACE/src/trunk/OpenDNSSEC && sh autogen.sh \
+&& ./configure --with-database-backend=sqlite3 --with-dbname=enforcertest && gmake \
+&& cd enforcer && gmake check && exit 0
+
+[ x$NODE_NAME = "xubuntu1" ] && cd $WORKSPACE/src/trunk/OpenDNSSEC && sh autogen.sh \
+&& ./configure --with-database-backend=sqlite3 --with-dbname=enforcertest && make \
+&& cd enforcer && make check && exit 0
+
+[ x$NODE_NAME = "xredhat1" ] && cd $WORKSPACE/src/trunk/OpenDNSSEC && sh autogen.sh \
+&& ./configure --with-database-backend=sqlite3 --with-dbname=enforcertest && make \
+&& cd enforcer && make check && exit 0
+
+[ x$NODE_NAME = "xsolaris1" ] && cd $WORKSPACE/src/trunk/OpenDNSSEC && sh autogen.sh \
+&& ./configure --with-database-backend=sqlite3 --with-dbname=enforcertest CFLAGS=-std=c99 \
+&& gmake && cd enforcer && gmake check && exit 0
+
+[ x$NODE_NAME = "xfreebsd1" ] && cd $WORKSPACE/src/trunk/OpenDNSSEC && sh autogen.sh \
+&& ./configure --with-database-backend=sqlite3 --with-dbname=enforcertest && gmake \
+&& cd enforcer && gmake check && exit 0
+
+exit 1
