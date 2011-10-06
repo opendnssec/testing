@@ -10,7 +10,11 @@ cd $WORKSPACE
 [ -d Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] \
 && rm -rf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO
 
-tar -xf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz 
+[ x$NODE_NAME = "xsolaris1" ] \
+&& gtar -xf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz 
+
+[ ! x$NODE_NAME = "xsolaris1" ] \
+&& tar -xf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz
 
 [ ! -d Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] && exit 1
 
