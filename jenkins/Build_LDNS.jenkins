@@ -21,24 +21,24 @@ cd $WORKSPACE
 cd ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO
 
 [ x$NODE_NAME = "xmaster" ] \
-&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+&& ./configure --prefix=$WORKSPACE --disable-gost && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xsolaris-vm1" ] \
-&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+&& ./configure --prefix=$WORKSPACE --disable-gost && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xubuntu1" ] \
-&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+&& ./configure --prefix=$WORKSPACE --disable-gost && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xredhat1" ] \
-&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+&& ./configure --prefix=$WORKSPACE --disable-gost && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xsolaris1" ] \
-&& echo "Configure ldns" && ./configure --prefix=$WORKSPACE \
+&& echo "Configure ldns" && ./configure --prefix=$WORKSPACE --disable-gost \
 && echo "Make ldns" && gmake \
 && echo "Make Check ldns" && gmake check \
 && echo "Make Install ldns" && gmake install && exit 0
  
 [ x$NODE_NAME = "xfreebsd1" ] \
-&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+&& ./configure --prefix=$WORKSPACE --disable-gost && make && make check && make install && exit 0
 
 exit 1
