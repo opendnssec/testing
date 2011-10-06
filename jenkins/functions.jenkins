@@ -1,0 +1,151 @@
+find_jenkins_workspace_root ()
+{
+	if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
+		echo "Unable to find workspace root since no WORKSPACE has been defined"
+		return -1
+	fi
+
+	local workspace=$WORKSPACE
+	local max_iter=20
+	local currdir
+	
+	while [ "$max_iter" -gt 0 ]; do
+		# check if the last dir on the path is workspace
+		currdir=`echo "$workspace" | sed 's%.*/%%'`
+		if [ "$currdir" = "workspace" ]; then
+			break
+		fi
+		
+		# remove the last dir on the path
+		workspace=`echo "$workspace" | sed 's%/[^/]*$%%'`
+		
+		max_iter=$(( max_iter - 1))
+	done
+
+	if [ -n "$workspace" -a "$max_iter" -gt 0 ]; then
+		WORKSPACE_ROOT="$workspace"
+		return
+	fi
+
+	echo "Failed to find workspace root in WORKSPACE=$WORKSPACE"
+	return 1
+}
+
+find_program ()
+{
+	if [ -n "$1" ]; then
+		local path=`which "$1" 2>/dev/null`
+		if [ -n "$path" -a -x "$path" ]; then
+			echo $path
+			return
+		fi
+	fi
+	
+	return 1
+}
+	
+find_make ()
+{
+	local make
+	local program
+	
+	for program in make gmake; do
+		make=`find_program "$program"`
+		if [ -n "$make" ]; then
+			MAKE="$make"
+			return
+		fi
+	done
+	
+	return 1
+}
+
+setup_install_root ()
+{
+	if [ -n "$INSTALL_ROOT" ]; then
+		if [ -d "$INSTALL_ROOT" ]; then
+			return
+		else
+			return 1
+		fi
+	fi
+
+	if [ -n "$INSTALL_TAG" ]; then
+		if [ ! -d "$WORKSPACE_ROOT/$INSTALL_TAG" ]; then
+			mkdir "$WORKSPACE_ROOT/$INSTALL_TAG" || {
+				echo "Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/$INSTALL_TAG"
+				return 1
+			}
+		fi
+		
+		INSTALL_ROOT="$WORKSPACE_ROOT/$INSTALL_TAG"
+		return
+		
+	elif [ ! -d "$WORKSPACE_ROOT/root" ]; then
+		mkdir "$WORKSPACE_ROOT/root" || {
+			echo "Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/root"
+			return 1
+		}
+	fi
+
+	INSTALL_ROOT="$WORKSPACE_ROOT/root"
+}
+
+init_or_die ()
+{
+	find_jenkins_workspace_root || exit 1
+	setup_install_root || exit 1
+	find_make || exit 1
+}
+
+check_if_build_ok ()
+{
+	if [ -z "$1" ]; then
+		echo "usage: check_if_build_ok <name tag>"
+		exit 1
+	fi
+	
+	if [ -z "$SVN_REVISION" ]; then
+		echo "No SVN_REVISION is set, can't check if build is ok!"
+		exit 1
+	fi
+	
+	local name_tag="$1"
+	
+	if [ -f "$INSTALL_ROOT/.$name_tag.build" ]; then
+		local build_svn_rev=`cat "$INSTALL_ROOT/.$name_tag.build"`
+		
+		if [ "$SVN_REVISION" = "$build_svn_rev" ]; then
+			return
+		fi
+	fi
+	
+	return 1
+}
+
+set_build_ok ()
+{
+	if [ -z "$1" ]; then
+		echo "usage: set_build_ok <name tag>"
+		exit 1
+	fi
+	
+	if [ -z "$SVN_REVISION" ]; then
+		echo "No SVN_REVISION is set, can't check if build is ok!"
+		exit 1
+	fi
+	
+	local name_tag="$1"
+
+	echo "$SVN_REVISION" > "$INSTALL_ROOT/.$name_tag.build"
+
+	if [ -f "$INSTALL_ROOT/.$name_tag.build" ]; then
+		local build_svn_rev=`cat "$INSTALL_ROOT/.$name_tag.build"`
+		
+		if [ "$SVN_REVISION" = "$build_svn_rev" ]; then
+			return
+		fi
+	fi
+	
+	return 1
+}
