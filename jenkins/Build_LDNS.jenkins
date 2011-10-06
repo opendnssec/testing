@@ -1,0 +1,44 @@
+VER_MAJOR=1
+VER_MINOR=6
+VER_MICRO=11
+
+cd $WORKSPACE
+
+[ ! -f ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz ] \
+&& curl -sO http://www.nlnetlabs.nl/downloads/ldns/ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz
+
+[ -d ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] \
+&& rm -rf ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO
+
+[ x$NODE_NAME = "xsolaris1" ] \
+&& gtar -xzf ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz
+
+[ ! x$NODE_NAME = "xsolaris1" ] \
+&& tar -xf ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz
+
+[ ! -d ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] && exit 1
+
+cd ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO
+
+[ x$NODE_NAME = "xmaster" ] \
+&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+
+[ x$NODE_NAME = "xsolaris-vm1" ] \
+&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+
+[ x$NODE_NAME = "xubuntu1" ] \
+&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+
+[ x$NODE_NAME = "xredhat1" ] \
+&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+
+[ x$NODE_NAME = "xsolaris1" ] \
+&& echo "Configure ldns" && ./configure.py --prefix=$WORKSPACE \
+&& echo "Make ldns" && gmake \
+&& echo "Make Check ldns" && gmake check \
+&& echo "Make Install ldns" && gmake install && exit 0
+ 
+[ x$NODE_NAME = "xfreebsd1" ] \
+&& ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
+
+exit 1
