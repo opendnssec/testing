@@ -33,7 +33,7 @@ cd ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO
 && ./configure --prefix=$WORKSPACE && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xsolaris1" ] \
-&& echo "Configure ldns" && ./configure.py --prefix=$WORKSPACE \
+&& echo "Configure ldns" && ./configure --prefix=$WORKSPACE \
 && echo "Make ldns" && gmake \
 && echo "Make Check ldns" && gmake check \
 && echo "Make Install ldns" && gmake install && exit 0
