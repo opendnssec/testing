@@ -1,34 +1,39 @@
+export $VER_MAJOR=1
+export $VER_MINOR=10
+export $VER_MICRO=1
+
+cd $WORKSPACE \
+&& [ ! -f Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz ] \
+&& curl -sO http://files.randombit.net/botan/v$VER_MAJOR.$VER_MINOR/Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz \
+&& [ -d Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] \
+&& rm -rf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
+&& tar -xf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz 
+
 [ x$NODE_NAME = "xmaster" ] \
-&& curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
-&& tar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
+&& cd Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
 && ./configure.py --prefix=$WORKSPACE && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xsolaris-vm1" ] \
-&& curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
-&& tar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
+&& cd Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
 && ./configure.py --prefix=$WORKSPACE && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xubuntu1" ] \
-&& curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
-&& tar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
+&& cd Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
 && ./configure.py --prefix=$WORKSPACE && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xredhat1" ] \
-&& curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
-&& tar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
+&& cd Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
 && ./configure.py --prefix=$WORKSPACE && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xsolaris1" ] \
-&& echo "Downloading Botan-1.10.1" && curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
-&& gtar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
+&& cd Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
 && echo "Configure Botan-1.10.1" && ./configure.py --prefix=$WORKSPACE \
-&& echo "Make Botan-1.10.1" && make \
-&& echo "Make Check Botan-1.10.1" && make check \
-&& echo "Make Install Botan-1.10.1" && make install && exit 0
+&& echo "Make Botan-1.10.1" && gmake \
+&& echo "Make Check Botan-1.10.1" && gmake check \
+&& echo "Make Install Botan-1.10.1" && gmake install && exit 0
  
 [ x$NODE_NAME = "xfreebsd1" ] \
-&& curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
-&& tar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
+&& cd Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
 && ./configure.py --prefix=$WORKSPACE && make && make check && make install && exit 0
 
 exit 1
