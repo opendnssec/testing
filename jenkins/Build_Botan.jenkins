@@ -1,13 +1,18 @@
-export $VER_MAJOR=1
-export $VER_MINOR=10
-export $VER_MICRO=1
+$VER_MAJOR=1
+$$VER_MINOR=10
+$VER_MICRO=1
 
-cd $WORKSPACE \
-&& [ ! -f Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz ] \
-&& curl -sO http://files.randombit.net/botan/v$VER_MAJOR.$VER_MINOR/Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz \
-&& [ -d Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] \
-&& rm -rf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
-&& tar -xf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz 
+cd $WORKSPACE
+
+[ ! -f Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz ] \
+&& curl -sO http://files.randombit.net/botan/v$VER_MAJOR.$VER_MINOR/Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz
+
+[ -d Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] \
+&& rm -rf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO
+
+tar -xf Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tbz 
+
+[ ! -d Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] && exit 1
 
 [ x$NODE_NAME = "xmaster" ] \
 && cd Botan-$VER_MAJOR.$VER_MINOR.$VER_MICRO \
