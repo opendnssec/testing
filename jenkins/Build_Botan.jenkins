@@ -19,10 +19,13 @@
 && ./configure.py --prefix=$WORKSPACE && make && make check && make install && exit 0
 
 [ x$NODE_NAME = "xsolaris1" ] \
-&& curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
+&& echo "Downloading Botan-1.10.1" && curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
 && gtar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
-&& ./configure.py --prefix=$WORKSPACE && make && make check && make install && exit 0
-
+&& echo "Configure Botan-1.10.1" && ./configure.py --prefix=$WORKSPACE \
+&& echo "Make Botan-1.10.1" && make \
+&& echo "Make Check Botan-1.10.1" && make check \
+&& echo "Make Install Botan-1.10.1" && make install && exit 0
+ 
 [ x$NODE_NAME = "xfreebsd1" ] \
 && curl -sO http://files.randombit.net/botan/v1.10/Botan-1.10.1.tbz \
 && tar -xf Botan-1.10.1.tbz && cd Botan-1.10.1 \
