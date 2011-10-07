@@ -40,10 +40,10 @@ case "$NODE_NAME" in
 			LD_LIBRARY_PATH=. ./check --test &&
 # configure.py messes up the Makefile need to replace LN = ln -fs with LN = ln -f -s or you get
 # The following command caused the error:
-# cd /home/jenkins/workspace/root/trunk/lib; ln -f -s libbotan-1.8.13.so libbotan.so
+# cd /home/jenkins/workspace/root/trunk/lib; ln -fs libbotan-1.8.13.so libbotan.so
             gsed -i 's/^LN.*$/LN = ln -f -s/' Makefile
 # Need to ensure that the destination libbotan.so is not present or else you get an error about it
-            rm -rf $INSTALL_ROOT/lib
+            rm -rf $INSTALL_ROOT/lib/libbotan.so
 # The path to the install binary is /usr/ucb/install
 			PATH=/usr/ucb:$PATH $MAKE install
 		) &&
