@@ -2,7 +2,7 @@
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built opendnssec && exit 0
-start_build
+start_build opendnssec
 
 # per node configs
 case "$NODE_NAME" in
