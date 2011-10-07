@@ -13,7 +13,7 @@ start_build botan
 # per node build
 build_ok=0
 case "$NODE_NAME" in
-	solaris* | \
+#	solaris* | \
 	redhat* | \
 	freebsd* | \
 	ubuntu* )
@@ -27,6 +27,22 @@ case "$NODE_NAME" in
 		) &&
 		build_ok=1
 		;;
+# On Solaris 5.11 snv_151a it appears necessary to set --with-tr1-implementation=none (I don't think this applies with Botan >= 1.10.1)
+# We can also add checks
+	solaris* )
+	    (
+	        cd "$WORKSPACE" &&
+			gunzip -c "$botan_src" | tar xf - &&
+			cd Botan-1.8.13 &&
+			./configure.py "--prefix=$INSTALL_ROOT" --with-tr1-implementation=none &&
+			$MAKE &&
+			$MAKE check &&
+			LD_LIBRARY_PATH=. ./check --test &&
+			$MAKE install
+		) &&
+		build_ok=1
+		;;
+	    )
 esac
 
 if [ "$build_ok" -eq 1 ]; then
