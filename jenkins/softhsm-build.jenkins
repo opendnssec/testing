@@ -1,0 +1,55 @@
+# init the build script
+source $WORKSPACE/testing/jenkins/functions.jenkins && init_build
+
+check_if_built softhsm && exit 0
+start_build softhsm
+
+# per node configs
+case "$NODE_NAME" in
+	solaris* | \
+	redhat* | \
+	ubuntu* | \
+	freebsd* )
+		CONFIGURE="--prefix=$INSTALL_ROOT"
+		;;
+esac
+
+# per node build
+build_ok=0
+case "$NODE_NAME" in
+	solaris* | \
+	redhat* | \
+	freebsd* )
+		(
+			cd $WORKSPACE/softHSM &&
+			sh autogen.sh &&
+			mkdir -p build &&
+			cd build &&
+			../configure $CONFIGURE &&
+			$MAKE &&
+			$MAKE check &&
+			$MAKE install
+		) &&
+		build_ok=1
+		;;
+
+	ubuntu* )
+		(
+			cd $WORKSPACE/softHSM &&
+			sh autogen.sh &&
+			mkdir -p build &&
+			cd build &&
+			../configure $CONFIGURE &&
+			$MAKE &&
+			$MAKE install
+		) &&
+		build_ok=1
+		;;
+esac
+
+if [ "$build_ok" -eq 1 ]; then
+	set_build_ok softhsm || exit 1
+	exit 0
+fi
+
+exit 1

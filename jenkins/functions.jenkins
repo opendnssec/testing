@@ -1,7 +1,85 @@
+append_path ()
+{
+	if [ -d "$1" ]; then
+		if [ -n "$PATH" ]; then
+			echo "$PATH" | grep -q -- "$1" 2>/dev/null && return;
+			PATH="$PATH:$1"
+		else
+			PATH="$1"
+		fi
+		export PATH
+	fi
+}
+
+prepend_path ()
+{
+	if [ -d "$1" ]; then
+		if [ -n "$PATH" ]; then
+			echo "$PATH" | grep -q -- "$1" 2>/dev/null && return;
+			PATH="$1:$PATH"
+		else
+			PATH="$1"
+		fi
+		export PATH
+	fi
+}
+
+append_cflags ()
+{
+	if [ -d "$1" ]; then
+		if [ -n "$CFLAGS" ]; then
+			echo "$CFLAGS" | grep -q -- "$1" 2>/dev/null && return;
+			CFLAGS="$CFLAGS $1"
+		else
+			CFLAGS="$1"
+		fi
+		export CFLAGS
+	fi
+}
+
+append_cppflags ()
+{
+	if [ -d "$1" ]; then
+		if [ -n "$CPPFLAGS" ]; then
+			echo "$CPPFLAGS" | grep -q -- "$1" 2>/dev/null && return;
+			CPPFLAGS="$CPPFLAGS $1"
+		else
+			CPPFLAGS="$1"
+		fi
+		export CPPFLAGS
+	fi
+}
+
+append_ldflags ()
+{
+	if [ -d "$1" ]; then
+		if [ -n "$LDFLAGS" ]; then
+			echo "$LDFLAGS" | grep -q -- "$1" 2>/dev/null && return;
+			LDFLAGS="$LDFLAGS $1"
+		else
+			LDFLAGS="$1"
+		fi
+		export LDFLAGS
+	fi
+}
+
+append_ld_library_path ()
+{
+	if [ -d "$1" ]; then
+		if [ -n "$LD_LIBRARY_PATH" ]; then
+			echo "$LD_LIBRARY_PATH" | grep -q -- "$1" 2>/dev/null && return;
+			LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$1"
+		else
+			LD_LIBRARY_PATH="$1"
+		fi
+		export LD_LIBRARY_PATH
+	fi
+}
+
 find_jenkins_workspace_root ()
 {
 	if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
-		echo "Unable to find workspace root since no WORKSPACE has been defined"
+		echo "find_jenkins_workspace_root: Unable to find workspace root since no WORKSPACE has been defined" >&2
 		return -1
 	fi
 
@@ -27,7 +105,7 @@ find_jenkins_workspace_root ()
 		return
 	fi
 
-	echo "Failed to find workspace root in WORKSPACE=$WORKSPACE"
+	echo "find_jenkins_workspace_root: Failed to find workspace root in WORKSPACE=$WORKSPACE" >&2
 	return 1
 }
 
@@ -52,11 +130,31 @@ find_make ()
 	for program in make gmake; do
 		make=`find_program "$program"`
 		if [ -n "$make" ]; then
-			MAKE="$make"
+			export MAKE="$make"
 			return
 		fi
 	done
 	
+	return 1
+}
+
+find_shasum ()
+{
+	local shasum
+	local program
+	
+	for program in sha256sum shasum; do
+		shasum=`find_program "$program"`
+		if [ -n "$shasum" ]; then
+			if [ "$shasum" = "shasum" ]; then
+				SHASUM="$shasum -a 256"
+			else
+				SHASUM="$shasum"
+			fi
+			export SHASUM
+		fi
+	done
+
 	return 1
 }
 
@@ -70,43 +168,68 @@ setup_install_root ()
 		fi
 	fi
 
+	if [ ! -d "$WORKSPACE_ROOT/root" ]; then
+		mkdir "$WORKSPACE_ROOT/root" || {
+			echo "setup_install_root: Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/root" >&2
+			return 1
+		}
+	fi
+	
 	if [ -n "$INSTALL_TAG" ]; then
-		if [ ! -d "$WORKSPACE_ROOT/$INSTALL_TAG" ]; then
-			mkdir "$WORKSPACE_ROOT/$INSTALL_TAG" || {
-				echo "Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/$INSTALL_TAG"
+		if [ ! -d "$WORKSPACE_ROOT/root/$INSTALL_TAG" ]; then
+			mkdir "$WORKSPACE_ROOT/root/$INSTALL_TAG" || {
+				echo "setup_install_root: Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/root/$INSTALL_TAG" >&2
 				return 1
 			}
 		fi
 		
-		INSTALL_ROOT="$WORKSPACE_ROOT/$INSTALL_TAG"
-		return
-		
-	elif [ ! -d "$WORKSPACE_ROOT/root" ]; then
-		mkdir "$WORKSPACE_ROOT/root" || {
-			echo "Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/root"
-			return 1
-		}
-	fi
+		INSTALL_ROOT="$WORKSPACE_ROOT/root/$INSTALL_TAG"
 
-	INSTALL_ROOT="$WORKSPACE_ROOT/root"
+		if [ -d "$INSTALL_ROOT/bin" ]; then
+			prepend_path "$INSTALL_ROOT/bin"
+		fi
+		if [ -d "$INSTALL_ROOT/sbin" ]; then
+			preappend_path "$INSTALL_ROOT/sbin"
+		fi
+		if [ -d "$INSTALL_ROOT/lib" ]; then
+			append_ldflags "-L$INSTALL_ROOT/lib"
+		fi
+		if [ -d "$INSTALL_ROOT/include" ]; then
+			append_cflags "-I$INSTALL_ROOT/include"
+			append_cppflags "-I$INSTALL_ROOT/include"
+		fi
+		
+		return
+	fi
+	
+	echo "setup_install_root: INSTALL_TAG or INSTALL_ROOT is not set, need to know in where to build/test" >&2
+	return 1
 }
 
-init_or_die ()
+init_build ()
 {
 	find_jenkins_workspace_root || exit 1
 	setup_install_root || exit 1
 	find_make || exit 1
+	find_shasum || exit 1
 }
 
-check_if_build_ok ()
+init_test ()
+{
+	find_jenkins_workspace_root || exit 1
+	setup_install_root || exit 1
+	find_shasum || exit 1
+}
+
+check_if_built ()
 {
 	if [ -z "$1" ]; then
-		echo "usage: check_if_build_ok <name tag>"
+		echo "usage: check_if_build_ok <name tag>" >&2
 		exit 1
 	fi
 	
 	if [ -z "$SVN_REVISION" ]; then
-		echo "No SVN_REVISION is set, can't check if build is ok!"
+		echo "check_if_built: No SVN_REVISION is set, can't check if build is ok!" >&2
 		exit 1
 	fi
 	
@@ -121,23 +244,41 @@ check_if_build_ok ()
 	fi
 	
 	return 1
+}
+
+start_build ()
+{
+	if [ -z "$1" ]; then
+		echo "usage: start_build <name tag>" >&2
+		exit 1
+	fi
+	
+	local name_tag="$1"
+	
+	rm -f "$INSTALL_ROOT/.$name_tag.ok"
 }
 
 set_build_ok ()
 {
 	if [ -z "$1" ]; then
-		echo "usage: set_build_ok <name tag>"
+		echo "usage: set_build_ok <name tag>" >&2
 		exit 1
 	fi
 	
 	if [ -z "$SVN_REVISION" ]; then
-		echo "No SVN_REVISION is set, can't check if build is ok!"
+		echo "set_build_ok: No SVN_REVISION is set, can't check if build is ok!" >&2
 		exit 1
 	fi
 	
 	local name_tag="$1"
 
+	if [ -f "$INSTALL_ROOT/.$name_tag.ok" ]; then
+		echo "set_build_ok: Build already mark ok, this should not happend. Did you forget to start_build?" >&2
+		exit 1
+	fi
+
 	echo "$SVN_REVISION" > "$INSTALL_ROOT/.$name_tag.build"
+	touch "$INSTALL_ROOT/.$name_tag.ok"
 
 	if [ -f "$INSTALL_ROOT/.$name_tag.build" ]; then
 		local build_svn_rev=`cat "$INSTALL_ROOT/.$name_tag.build"`
@@ -148,4 +289,86 @@ set_build_ok ()
 	fi
 	
 	return 1
+}
+
+require ()
+{
+	if [ -z "$1" ]; then
+		echo "usage: set_build_ok <name tag>" >&2
+		exit 1
+	fi
+	
+	local name_tag="$1"
+	
+	if [ ! -f "$INSTALL_ROOT/$name_tag.ok" ]; then
+		echo "require: Required program $name_tag not found or not built!" >&2
+		exit 1
+	fi
+}
+
+check_sha256 ()
+{
+	if [ -z "$1" -o -z "$2" ]; then
+		echo "usage: check_sha256 <filename> <sha256>" >&2
+		exit 1
+	fi
+	
+	local filename="$1"
+	local sha256="$2"
+	local file_sha256
+	
+	if [ -f "$filename" ]; then
+		file_sha256=`$SHASUM -p "$filename" | awk '{print $1}'`
+		if [ "$sha256" = "$file_sha256" ]; then
+			return
+		fi
+	fi
+	
+	return 1
+}
+
+fetch_src ()
+{
+	if [ -z "$1" -o -z "$2" -o -z "$3" ]; then
+		echo "usage: fetch_src <url> <filename> <sha256>" >&2
+		exit 1
+	fi
+	
+	local url="$1"
+	local filename="$2"
+	local path_filename
+	local sha256="$3"
+	
+	if [ ! -d "$INSTALL_ROOT/var/cache/files" ]; then
+		mkdir -p "$INSTALL_ROOT/var/cache/files" || {
+			echo "fetch_src: Unable to create cache directory $INSTALL_ROOT/var/cache/files!" >&2
+			exit 1
+		}
+	fi
+
+	path_filename="$INSTALL_ROOT/var/cache/files/$filename"
+
+	if [ -f "$path_filename" ]; then
+		check_sha256 "$path_filename" "$sha256" && {
+			echo "$path_filename"
+			return
+		}
+		rm -f "$path_filename" || {
+			echo "fetch_src: Unable to remove old invalid file $path_filename!" >&2
+			exit 1
+		}
+	fi
+
+	$WGET -O "$path_filename" "$url"
+	
+	if [ ! -f "$path_filename" ]; then
+		echo "fetch_src: File at $url not found at $path_filename!" >&2
+		exit 1
+	fi
+	
+	check_sha256 "$path_filename" "$sha256" || {
+		echo "fetch_src: SHA256 checksum does not match for $path_filename!" >&2
+		exit 1
+	}
+	echo "$path_filename"
 }

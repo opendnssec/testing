@@ -1,0 +1,47 @@
+# init the build script
+source $WORKSPACE/testing/jenkins/functions.jenkins && init_build
+
+BOTAN_FILENAME="Botan-1.8.13.tgz"
+BOTAN_URL="http://botan.randombit.net/files/$BOTAN_FILENAME"
+BOTAN_SHA256="f2802d286e443f90810a7a84355a8d853ec33cc2b0dde854da729c4ad8bf67fc"
+SVN_REVISION="1.8.13"
+
+check_if_built botan && exit 0
+
+botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "$BOTAN_SHA256"`
+
+# per node configs
+case "$NODE_NAME" in
+	solaris* | \
+	redhat* | \
+	ubuntu* | \
+	freebsd* )
+		CONFIGURE="--prefix=$INSTALL_ROOT"
+		;;
+esac
+
+# per node build
+build_ok=0
+case "$NODE_NAME" in
+	solaris* | \
+	redhat* | \
+	freebsd* |Ê\
+	ubuntu* )
+		(
+			cd $WORKSPACE &&
+			gunzip -c $botan_src | tar xf - &&
+			cd Botan-1.8.13 &&
+			./configure.py $CONFIGURE &&
+			$MAKE &&
+			$MAKE install
+		) &&
+		build_ok=1
+		;;
+esac
+
+if [ "$build_ok" -eq 1 ]; then
+	set_build_ok botan || exit 1
+	exit 0
+fi
+
+exit 1
