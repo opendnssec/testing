@@ -146,7 +146,8 @@ find_shasum ()
 	for program in sha256sum shasum; do
 		shasum=`find_program "$program"`
 		if [ -n "$shasum" ]; then
-			if [ "$shasum" = "shasum" ]; then
+			local shasum_filename=`echo "$shasum" | sed 's%.*/%%'
+			if [ "$shasum_filename" = "shasum" ]; then
 				SHASUM="$shasum -a 256"
 			else
 				SHASUM="$shasum"
