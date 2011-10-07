@@ -19,7 +19,7 @@ build_ok=0
 case "$NODE_NAME" in
 	solaris* | \
 	redhat* | \
-	freebsd* |Ê\
+	freebsd* | \
 	ubuntu* )
 		(
 			cd opendnssec &&
