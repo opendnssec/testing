@@ -320,7 +320,7 @@ require ()
 	
 	local name_tag="$1"
 	
-	if [ ! -f "$INSTALL_ROOT/$name_tag.ok" ]; then
+	if [ ! -f "$INSTALL_ROOT/.$name_tag.ok" ]; then
 		echo "require: Required program $name_tag not found or not built!" >&2
 		exit 1
 	fi
