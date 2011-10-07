@@ -42,7 +42,7 @@ case "$NODE_NAME" in
 		) &&
 		build_ok=1
 		;;
-	    )
+
 esac
 
 if [ "$build_ok" -eq 1 ]; then
