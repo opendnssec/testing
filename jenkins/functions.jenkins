@@ -208,10 +208,11 @@ setup_install_root ()
 			prepend_path "$INSTALL_ROOT/bin"
 		fi
 		if [ -d "$INSTALL_ROOT/sbin" ]; then
-			preappend_path "$INSTALL_ROOT/sbin"
+			prepend_path "$INSTALL_ROOT/sbin"
 		fi
 		if [ -d "$INSTALL_ROOT/lib" ]; then
 			append_ldflags "-L$INSTALL_ROOT/lib"
+			append_ld_library_path "$INSTALL_ROOT/lib"
 		fi
 		if [ -d "$INSTALL_ROOT/include" ]; then
 			append_cflags "-I$INSTALL_ROOT/include"
