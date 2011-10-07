@@ -338,7 +338,7 @@ check_sha256 ()
 	local file_sha256
 	
 	if [ -f "$filename" ]; then
-		file_sha256=`$SHASUM -p "$filename" | awk '{print $1}'`
+		file_sha256=`$SHASUM "$filename" | awk '{print $1}'`
 		if [ "$sha256" = "$file_sha256" ]; then
 			return
 		fi
