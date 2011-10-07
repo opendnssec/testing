@@ -1,5 +1,5 @@
 # init the build script
-source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build
+source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 BOTAN_FILENAME="Botan-1.8.13.tgz"
 BOTAN_URL="http://botan.randombit.net/files/$BOTAN_FILENAME"

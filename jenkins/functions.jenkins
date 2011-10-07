@@ -146,13 +146,14 @@ find_shasum ()
 	for program in sha256sum shasum; do
 		shasum=`find_program "$program"`
 		if [ -n "$shasum" ]; then
-			local shasum_filename=`echo "$shasum" | sed 's%.*/%%'
+			local shasum_filename=`echo "$shasum" | sed 's%.*/%%'`
 			if [ "$shasum_filename" = "shasum" ]; then
 				SHASUM="$shasum -a 256"
 			else
 				SHASUM="$shasum"
 			fi
 			export SHASUM
+			return
 		fi
 	done
 
@@ -170,18 +171,18 @@ setup_install_root ()
 	fi
 
 	if [ ! -d "$WORKSPACE_ROOT/root" ]; then
-		mkdir "$WORKSPACE_ROOT/root" || {
+		if ! mkdir "$WORKSPACE_ROOT/root"; then
 			echo "setup_install_root: Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/root" >&2
 			return 1
-		}
+		fi
 	fi
 	
 	if [ -n "$INSTALL_TAG" ]; then
 		if [ ! -d "$WORKSPACE_ROOT/root/$INSTALL_TAG" ]; then
-			mkdir "$WORKSPACE_ROOT/root/$INSTALL_TAG" || {
+			if ! mkdir "$WORKSPACE_ROOT/root/$INSTALL_TAG"; then
 				echo "setup_install_root: Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/root/$INSTALL_TAG" >&2
 				return 1
-			}
+			fi
 		fi
 		
 		INSTALL_ROOT="$WORKSPACE_ROOT/root/$INSTALL_TAG"
@@ -341,35 +342,36 @@ fetch_src ()
 	local sha256="$3"
 	
 	if [ ! -d "$INSTALL_ROOT/var/cache/files" ]; then
-		mkdir -p "$INSTALL_ROOT/var/cache/files" || {
+		if ! mkdir -p "$INSTALL_ROOT/var/cache/files"; then
 			echo "fetch_src: Unable to create cache directory $INSTALL_ROOT/var/cache/files!" >&2
-			exit 1
-		}
+			return 1
+		fi
 	fi
 
 	path_filename="$INSTALL_ROOT/var/cache/files/$filename"
 
 	if [ -f "$path_filename" ]; then
-		check_sha256 "$path_filename" "$sha256" && {
+		if check_sha256 "$path_filename" "$sha256"; then
 			echo "$path_filename"
 			return
-		}
-		rm -f "$path_filename" || {
+		fi
+		if ! rm -f "$path_filename"; then
 			echo "fetch_src: Unable to remove old invalid file $path_filename!" >&2
-			exit 1
-		}
+			return 1
+		fi
 	fi
 
 	$WGET -O "$path_filename" "$url"
 	
 	if [ ! -f "$path_filename" ]; then
 		echo "fetch_src: File at $url not found at $path_filename!" >&2
-		exit 1
+		return 1
 	fi
 	
-	check_sha256 "$path_filename" "$sha256" || {
+	if ! check_sha256 "$path_filename" "$sha256"; then
 		echo "fetch_src: SHA256 checksum does not match for $path_filename!" >&2
-		exit 1
-	}
+		return 1
+	fi
+	
 	echo "$path_filename"
 }

@@ -1,5 +1,5 @@
 # init the build script
-source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build
+source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built opendnssec && exit 0
 start_build
