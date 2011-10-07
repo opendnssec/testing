@@ -6,6 +6,21 @@ different installations paths so you can have multiple versions of software
 on the same machine and do all kinds of tests.
 
 
+Coding note!
+============
+
+All scripts are made to run in bash and may not work in other shell scripts
+engines.
+
+All variables containing paths must be quoted correctly because they made
+contain spaces or other characters.
+
+ex: source "$WORKSPACE/testing/jenkins/functions.jenkins"
+
+If the project name or anything else that WORKSPACE is built upon this
+would have failed if it was not quoted.
+
+
 Files
 =====
 

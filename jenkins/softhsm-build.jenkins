@@ -1,5 +1,5 @@
 # init the build script
-source $WORKSPACE/testing/jenkins/functions.jenkins && init_build
+source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build
 
 check_if_built softhsm && exit 0
 start_build softhsm
@@ -21,7 +21,7 @@ case "$NODE_NAME" in
 	redhat* | \
 	freebsd* )
 		(
-			cd $WORKSPACE/softHSM &&
+			cd "$WORKSPACE/softHSM" &&
 			sh autogen.sh &&
 			mkdir -p build &&
 			cd build &&
@@ -35,7 +35,7 @@ case "$NODE_NAME" in
 
 	ubuntu* )
 		(
-			cd $WORKSPACE/softHSM &&
+			cd "$WORKSPACE/softHSM" &&
 			sh autogen.sh &&
 			mkdir -p build &&
 			cd build &&

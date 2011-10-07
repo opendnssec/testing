@@ -83,7 +83,7 @@ find_jenkins_workspace_root ()
 		return -1
 	fi
 
-	local workspace=$WORKSPACE
+	local workspace="$WORKSPACE"
 	local max_iter=20
 	local currdir
 	
@@ -114,7 +114,7 @@ find_program ()
 	if [ -n "$1" ]; then
 		local path=`which "$1" 2>/dev/null`
 		if [ -n "$path" -a -x "$path" ]; then
-			echo $path
+			echo "$path"
 			return
 		fi
 	fi

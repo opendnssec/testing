@@ -1,10 +1,10 @@
 # init the build script
-source $WORKSPACE/testing/jenkins/functions.jenkins && init_build
+source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build
 
 BOTAN_FILENAME="Botan-1.8.13.tgz"
 BOTAN_URL="http://botan.randombit.net/files/$BOTAN_FILENAME"
 BOTAN_SHA256="f2802d286e443f90810a7a84355a8d853ec33cc2b0dde854da729c4ad8bf67fc"
-SVN_REVISION="1.8.13"
+SVN_REVISION="$SVN_REVISION.1.8.13"
 
 check_if_built botan && exit 0
 
@@ -28,8 +28,8 @@ case "$NODE_NAME" in
 	freebsd* |Ê\
 	ubuntu* )
 		(
-			cd $WORKSPACE &&
-			gunzip -c $botan_src | tar xf - &&
+			cd "$WORKSPACE" &&
+			gunzip -c "$botan_src" | tar xf - &&
 			cd Botan-1.8.13 &&
 			./configure.py $CONFIGURE &&
 			$MAKE &&
