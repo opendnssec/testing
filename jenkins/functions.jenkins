@@ -160,6 +160,23 @@ find_shasum ()
 	return 1
 }
 
+
+find_wget ()
+{
+	local wget
+	local program
+	
+	for program in wget; do
+		wget=`find_program "$program"`
+		if [ -n "$wget" ]; then
+			export WGET="$wget"
+			return
+		fi
+	done
+
+	return 1
+}
+
 setup_install_root ()
 {
 	if [ -n "$INSTALL_ROOT" ]; then
@@ -213,6 +230,7 @@ init_build ()
 	find_jenkins_workspace_root || exit 1
 	setup_install_root || exit 1
 	find_make || exit 1
+	find_wget || exit 1
 	find_shasum || exit 1
 }
 
@@ -344,7 +362,7 @@ fetch_src ()
 	if [ ! -d "$INSTALL_ROOT/var/cache/files" ]; then
 		if ! mkdir -p "$INSTALL_ROOT/var/cache/files"; then
 			echo "fetch_src: Unable to create cache directory $INSTALL_ROOT/var/cache/files!" >&2
-			return 1
+			exit 1
 		fi
 	fi
 
@@ -357,7 +375,7 @@ fetch_src ()
 		fi
 		if ! rm -f "$path_filename"; then
 			echo "fetch_src: Unable to remove old invalid file $path_filename!" >&2
-			return 1
+			exit 1
 		fi
 	fi
 
@@ -365,12 +383,12 @@ fetch_src ()
 	
 	if [ ! -f "$path_filename" ]; then
 		echo "fetch_src: File at $url not found at $path_filename!" >&2
-		return 1
+		exit 1
 	fi
 	
 	if ! check_sha256 "$path_filename" "$sha256"; then
 		echo "fetch_src: SHA256 checksum does not match for $path_filename!" >&2
-		return 1
+		exit 1
 	fi
 	
 	echo "$path_filename"
