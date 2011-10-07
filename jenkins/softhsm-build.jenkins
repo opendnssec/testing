@@ -2,6 +2,7 @@
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built softhsm && exit 0
+require botan
 start_build softhsm
 
 # per node configs
@@ -10,7 +11,7 @@ case "$NODE_NAME" in
 	redhat* | \
 	ubuntu* | \
 	freebsd* )
-		CONFIGURE="--prefix=$INSTALL_ROOT"
+		CONFIGURE="--prefix=\"$INSTALL_ROOT\" --with-boton=\"$INSTALL_ROOT\""
 		;;
 esac
 
