@@ -38,7 +38,7 @@ case "$NODE_NAME" in
 			$MAKE &&
 			$MAKE check &&
 			LD_LIBRARY_PATH=. ./check --test &&
-			$MAKE install
+			PATH=/usr/ucb:$PATH $MAKE install
 		) &&
 		build_ok=1
 		;;
