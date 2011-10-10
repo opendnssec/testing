@@ -121,13 +121,14 @@ find_program ()
 	
 	return 1
 }
-	
+
+# Find gmake if it is available	
 find_make ()
 {
 	local make
 	local program
 	
-	for program in make gmake; do
+	for program in gmake make; do
 		make=`find_program "$program"`
 		if [ -n "$make" ]; then
 			export MAKE="$make"
