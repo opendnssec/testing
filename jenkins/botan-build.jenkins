@@ -4,11 +4,11 @@ source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 BOTAN_FILENAME="Botan-${BOTAN_VER_MAJOR}.${BOTAN_VER_MINOR}.${BOTAN_VER_PATCH}.tgz"
 BOTAN_URL="http://botan.randombit.net/files/$BOTAN_FILENAME"
-BOTAN_${BOTAN_VER_MAJOR}_${BOTAN_VER_MINOR}_${BOTAN_VER_PATCH}_SHA256="f2802d286e443f90810a7a84355a8d853ec33cc2b0dde854da729c4ad8bf67fc"
+BOTAN_SHA256="f2802d286e443f90810a7a84355a8d853ec33cc2b0dde854da729c4ad8bf67fc"
 SVN_REVISION="$SVN_REVISION.${BOTAN_VER_MAJOR}.${BOTAN_VER_MINOR}.${BOTAN_VER_PATCH}"
 
 check_if_built botan && exit 0
-botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "${BOTAN_${BOTAN_VER_MAJOR}_${BOTAN_VER_MINOR}_${BOTAN_VER_PATCH}_SHA256}"`
+botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "$BOTAN_SHA256"`
 start_build botan
 
 # per node build
