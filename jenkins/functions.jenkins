@@ -293,6 +293,8 @@ init_test ()
 {
 	find_jenkins_workspace_root || exit 1
 	setup_install_root || exit 1
+	find_make || exit 1
+	find_wget || exit 1
 	find_hashs || exit 1
 #	find_shasum || exit 1
 }
