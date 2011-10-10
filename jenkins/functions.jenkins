@@ -138,7 +138,49 @@ find_make ()
 	return 1
 }
 
-find_shasum ()
+# Find correct program to perform md5 hash
+find_md5sum ()
+{
+    local md5sum
+    local program
+    
+    for program in md5sum md5; do
+		md5sum=`find_program "$program"`
+		if [ -n "$md5sum" ]; then
+		    MD5SUM="$md5sum"
+			export MD5SUM
+			return
+		fi
+	done
+
+	return 1
+}
+
+# Find correct program to perform SHA1 hash
+find_sha1sum ()
+{
+    local shasum
+    local program
+
+    for program in sha1 shasum; do
+    	shasum=`find_program "$program"`
+    	if [ -n "$shasum" ]; then
+    		local shasum_filename=`echo "$shasum" | sed 's%.*/%%'`
+    		if [ "$shasum_filename" = "shasum" ]; then
+    			SHA1SUM="$shasum -a 1"
+    		else
+    			SHA1SUM="$shasum"
+    		fi
+    		export SHA1SUM
+    		return
+    	fi
+    done
+
+    return 1
+}
+
+# Find correct program to perform SHA256 hash
+find_sha256sum ()
 {
 	local shasum
 	local program
@@ -148,9 +190,9 @@ find_shasum ()
 		if [ -n "$shasum" ]; then
 			local shasum_filename=`echo "$shasum" | sed 's%.*/%%'`
 			if [ "$shasum_filename" = "shasum" ]; then
-				SHASUM="$shasum -a 256"
+				SHA256SUM="$shasum -a 256"
 			else
-				SHASUM="$shasum"
+				SHA256SUM="$shasum"
 			fi
 			export SHASUM
 			return
@@ -160,6 +202,16 @@ find_shasum ()
 	return 1
 }
 
+# Returns all possible hash functions (Assume that no one is publishing other SHA2 hashs)
+find_hashs ()
+{
+    find md5sum
+    && find_sha1sum
+    && find sha256sum
+    && return
+    
+    return 1
+}
 
 find_wget ()
 {
@@ -232,14 +284,16 @@ init_build ()
 	setup_install_root || exit 1
 	find_make || exit 1
 	find_wget || exit 1
-	find_shasum || exit 1
+	find_hashs || exit 1
+#	find_shasum || exit 1
 }
 
 init_test ()
 {
 	find_jenkins_workspace_root || exit 1
 	setup_install_root || exit 1
-	find_shasum || exit 1
+	find_hashs || exit 1
+#	find_shasum || exit 1
 }
 
 check_if_built ()
@@ -327,38 +381,60 @@ require ()
 	fi
 }
 
-check_sha256 ()
+check_hash ()
 {
-	if [ -z "$1" -o -z "$2" ]; then
-		echo "usage: check_sha256 <filename> <sha256>" >&2
+    if [ -z "$1" -o -z "$2" ]; then
+		echo "usage: check_hash <filename> <hash>" >&2
 		exit 1
 	fi
 	
 	local filename="$1"
-	local sha256="$2"
-	local file_sha256
+	local hash="$2"
+	local file_hash
+
+    case ${#hash} in
+        32 )
+            export HASH_TYPE=$MD5SUM
+            ;;
+    	40 )
+    	    export HASH_TYPE=$SHA1SUM
+    	    ;;
+    	64 )
+    	    export HASH_TYPE=$SHA256SUM
+    	    ;;
+    	* )
+    	    echo "Unknown hash type" >&2
+        	exit 1
+        	;;
+    esac
 	
 	if [ -f "$filename" ]; then
-		file_sha256=`$SHASUM "$filename" | awk '{print $1}'`
-		if [ "$sha256" = "$file_sha256" ]; then
+	    if [ $HASH_TYPE == $MD5SUM ]; then
+	        file_hash=`$HASH_TYPE "$filename" | awk '{print $4}'`
+	    else
+		    file_hash=`$HASH_TYPE "$filename" | awk '{print $1}'`
+		fi
+		if [ "$hash" = "$file_hash" ]; then
 			return
 		fi
 	fi
 	
 	return 1
+	
 }
 
 fetch_src ()
 {
 	if [ -z "$1" -o -z "$2" -o -z "$3" ]; then
-		echo "usage: fetch_src <url> <filename> <sha256>" >&2
+		echo "usage: fetch_src <url> <filename> <hash>" >&2
 		exit 1
 	fi
 	
 	local url="$1"
 	local filename="$2"
 	local path_filename
-	local sha256="$3"
+    local hash="$3"
+    
 	
 	if [ ! -d "$INSTALL_ROOT/var/cache/files" ]; then
 		if ! mkdir -p "$INSTALL_ROOT/var/cache/files"; then
@@ -370,7 +446,7 @@ fetch_src ()
 	path_filename="$INSTALL_ROOT/var/cache/files/$filename"
 
 	if [ -f "$path_filename" ]; then
-		if check_sha256 "$path_filename" "$sha256"; then
+		if check_hash "$path_filename" "$hash"; then
 			echo "$path_filename"
 			return
 		fi
@@ -387,7 +463,7 @@ fetch_src ()
 		exit 1
 	fi
 	
-	if ! check_sha256 "$path_filename" "$sha256"; then
+	if ! check_hash "$path_filename" "$hash"; then
 		echo "fetch_src: SHA256 checksum does not match for $path_filename!" >&2
 		exit 1
 	fi
