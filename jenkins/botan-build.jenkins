@@ -1,13 +1,14 @@
 # init the build script
+source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
-BOTAN_FILENAME="Botan-1.8.13.tgz"
+BOTAN_FILENAME="Botan-$BOTAN_VER_MAJOR.$BOTAN_VER_MINOR.$BOTAN_VER_PATCH.tgz"
 BOTAN_URL="http://botan.randombit.net/files/$BOTAN_FILENAME"
-BOTAN_SHA256="f2802d286e443f90810a7a84355a8d853ec33cc2b0dde854da729c4ad8bf67fc"
-SVN_REVISION="$SVN_REVISION.1.8.13"
+BOTAN_$BOTAN_VER_MAJOR_$BOTAN_VER_MINOR_$BOTAN_VER_PATCH_SHA256="f2802d286e443f90810a7a84355a8d853ec33cc2b0dde854da729c4ad8bf67fc"
+SVN_REVISION="$SVN_REVISION.$BOTAN_VER_MAJOR.$BOTAN_VER_MINOR.$BOTAN_VER_PATCH"
 
 check_if_built botan && exit 0
-botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "$BOTAN_SHA256"`
+botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "BOTAN_$BOTAN_VER_MAJOR_$BOTAN_VER_MINOR_$BOTAN_VER_PATCH_SHA256"`
 start_build botan
 
 # per node build
@@ -23,6 +24,8 @@ case "$NODE_NAME" in
 			cd Botan-1.8.13 &&
 			./configure.py "--prefix=$INSTALL_ROOT" &&
 			$MAKE &&
+			$MAKE check &&
+			LD_LIBRARY_PATH=. ./check --test &&
 			$MAKE install
 		) &&
 		build_ok=1
@@ -41,9 +44,9 @@ case "$NODE_NAME" in
 # configure.py messes up the Makefile need to replace LN = ln -fs with LN = ln -f -s or you get
 # The following command caused the error:
 # cd /home/jenkins/workspace/root/trunk/lib; ln -fs libbotan-1.8.13.so libbotan.so
-            gsed -i 's/^LN.*$/LN = ln -f -s/' Makefile
+            gsed -i 's/^LN.*$/LN = ln -f -s/' Makefile &&
 # Need to ensure that the destination libbotan.so is not present or else you get an error about it
-            rm -rf $INSTALL_ROOT/lib/libbotan.so
+            [ -f $INSTALL_ROOT/lib/libbotan.so ] && rm -f $INSTALL_ROOT/lib/libbotan.so &&
 # The path to the install binary is /usr/ucb/install
 			PATH=/usr/ucb:$PATH $MAKE install
 		) &&
