@@ -394,6 +394,11 @@ check_hash ()
 	local hash="$2"
 	local file_hash
 
+# If the hash is empty then assume there is not one supplied for the package
+    if [ -z $hash ]; then
+        return 0
+    exit
+    
     case ${#hash} in
         32 )
             export HASH_TYPE=$MD5SUM
