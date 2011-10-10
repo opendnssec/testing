@@ -16,7 +16,7 @@ case "$NODE_NAME" in
 		(
 			cd "$WORKSPACE" &&
 			gunzip -c "$ldns_src" | tar xf - &&
-			cd ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO &&
+			cd ldns-$LDNS_VER_MAJOR.$LDNS_VER_MINOR.$LDNS_VER_MICRO &&
 			./configure "--prefix=$INSTALL_ROOT" "--disable-gost" &&
 			$MAKE &&
 			$MAKE install
