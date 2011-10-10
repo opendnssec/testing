@@ -397,7 +397,7 @@ check_hash ()
 # If the hash is empty then assume there is not one supplied for the package
     if [ -z $hash ]; then
         return 0
-    exit
+    fi
     
     case ${#hash} in
         32 )
