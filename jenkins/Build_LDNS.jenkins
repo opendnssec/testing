@@ -27,7 +27,7 @@ case "$NODE_NAME" in
 esac
 
 if [ "$build_ok" -eq 1 ]; then
-	set_build_ok botan || exit 1
+	set_build_ok ldns || exit 1
 	exit 0
 fi
 
