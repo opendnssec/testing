@@ -17,7 +17,7 @@ case "$NODE_NAME" in
 		(
 			cd "$WORKSPACE" &&
 			bunzip2 -c "$cunit_src" | tar xf - &&
-			cd cunit-$CUNIT_VER_MAJOR.$CUNIT_VER_MINOR.$CUNIT_VER_PATCH &&
+			cd cunit-$CUNIT_VER_MAJOR.$CUNIT_VER_MINOR-$CUNIT_VER_PATCH &&
 			./configure "--prefix=$INSTALL_ROOT" &&
 			$MAKE &&
 			$MAKE install
