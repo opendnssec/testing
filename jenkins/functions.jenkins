@@ -464,7 +464,7 @@ fetch_src ()
 	fi
 	
 	if ! check_hash "$path_filename" "$hash"; then
-		echo "fetch_src: SHA256 checksum does not match for $path_filename!" >&2
+		echo "fetch_src: Checksum does not match for $path_filename!" >&2
 		exit 1
 	fi
 	

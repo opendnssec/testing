@@ -16,7 +16,7 @@ case "$NODE_NAME" in
 		(
 			cd "$WORKSPACE" &&
 			gunzip -c "$botan_src" | tar xf - &&
-			cd Botan-1.8.13 &&
+			cd Botan-$BOTAN_VER_MAJOR.$BOTAN_VER_MINOR.$BOTAN_VER_PATCH &&
 			./configure.py "--prefix=$INSTALL_ROOT" &&
 			$MAKE &&
 			$MAKE check &&
@@ -31,7 +31,7 @@ case "$NODE_NAME" in
 	    (
 	        cd "$WORKSPACE" &&
 			gunzip -c "$botan_src" | tar xf - &&
-			cd Botan-1.8.13 &&
+			cd Botan-$BOTAN_VER_MAJOR.$BOTAN_VER_MINOR.$BOTAN_VER_PATCH &&
 			./configure.py "--prefix=$INSTALL_ROOT" --with-tr1-implementation=none &&
 			$MAKE &&
 			$MAKE check &&
