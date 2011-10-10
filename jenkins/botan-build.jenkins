@@ -1,5 +1,6 @@
 # init the build script
 source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
+SVN_REVISION=$BOTAN_SVN_REVISION
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built botan && exit 0
