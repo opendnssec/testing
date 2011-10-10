@@ -194,7 +194,7 @@ find_sha256sum ()
 			else
 				SHA256SUM="$shasum"
 			fi
-			export SHASUM
+			export SHA256SUM
 			return
 		fi
 	done

@@ -3,7 +3,7 @@ source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built botan && exit 0
-botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "$BOTAN_SHA256"`
+botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "$BOTAN_HASH"`
 start_build botan
 
 # per node build
