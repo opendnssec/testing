@@ -207,7 +207,7 @@ find_hashs ()
 {
     find_md5sum \
     && find_sha1sum \
-    && find sha256sum \
+    && find_sha256sum \
     && return
     
     return 1
