@@ -205,9 +205,9 @@ find_sha256sum ()
 # Returns all possible hash functions (Assume that no one is publishing other SHA2 hashs)
 find_hashs ()
 {
-    find md5sum
-    && find_sha1sum
-    && find sha256sum
+    find md5sum \
+    && find_sha1sum \
+    && find sha256sum \
     && return
     
     return 1
