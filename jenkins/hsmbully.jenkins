@@ -15,7 +15,7 @@ case "$NODE_NAME" in
 			sh autogen.sh &&
 			mkdir -p build &&
 			cd build &&
-			../configure "--prefix=$INSTALL_ROOT" "--with-pkcs11-softhsm=$INSTALL_ROOT/lib/libsofthsm.so" &&
+			../configure "--prefix=$INSTALL_ROOT" "--with-pkcs11-softhsm=$INSTALL_ROOT/lib/libsofthsm.so" "--with-cunit=$INSTALL_ROOT" &&
 			$MAKE &&
 			$MAKE check
 		)
