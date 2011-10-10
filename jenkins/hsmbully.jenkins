@@ -1,33 +1,30 @@
-[ x$NODE_NAME = "xsolaris_vm1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
---with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
-&& make && LD_LIBRARY_PATH=/usr/local/lib \
-PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
-&& exit 0
+# init the test script
+source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
+source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_test || exit 1
 
-[ x$NODE_NAME = "xmaster" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
---with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
-&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
-&& exit 0
+require softhsm
 
-[ x$NODE_NAME = "xfreebsd1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
---with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
-&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
-&& exit 0
+# per node test
+case "$NODE_NAME" in
+	solaris* | \
+	redhat* | \
+	freebsd* | \
+	ubuntu* )
+		(
+			cd "$WORKSPACE/hsmbully" &&
+			sh autogen.sh &&
+			mkdir -p build &&
+			cd build &&
+			../configure "--prefix=$INSTALL_ROOT" "--with-pkcs11-softhsm=$INSTALL_ROOT/lib/libsofthsm.so" &&
+			$MAKE &&
+			$MAKE check
+		) &&
+		;;
+esac
 
-[ x$NODE_NAME = "xubuntu1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
---with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
-&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
-&& exit 0
-
-[ x$NODE_NAME = "xredhat1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
---with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
-&& make && PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
-&& exit 0
-
-[ x$NODE_NAME = "xsolaris1" ] && cd src/trunk/hsmbully && sh autogen.sh && ./configure \
---with-pkcs11-softhsm=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/lib/libsofthsm.so \
-&& make && LD_LIBRARY_PATH=/usr/local/lib \
-PATH=/home/jenkins/workspace/A_SoftHSM_test_and_install_Needed_by_other_projects/label/$NODE_NAME/bin:$PATH make check \
-&& exit 0
+if [ "$build_ok" -eq 1 ]; then
+	set_build_ok softhsm || exit 1
+	exit 0
+fi
 
 exit 1
