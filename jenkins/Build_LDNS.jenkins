@@ -1,43 +1,34 @@
-VER_MAJOR=1
-VER_MINOR=6
-VER_MICRO=11
+# init the build script
+source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
+source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
-cd $WORKSPACE
+check_if_built ldns && exit 0
+ldns_src=`fetch_src "$LDNS_URL" "$LDNS_FILENAME" "$LDNS_HASH"`
+start_build ldns
 
-[ ! -f ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz ] \
-&& curl -sO http://www.nlnetlabs.nl/downloads/ldns/ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz
+# per node build
+build_ok=0
+case "$NODE_NAME" in
+	solaris* | \
+	redhat* | \
+	freebsd* | \
+	ubuntu* )
+		(
+			cd "$WORKSPACE" &&
+			gunzip -c "$ldns_src" | tar xf - &&
+			cd ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO &&
+			./configure "--prefix=$INSTALL_ROOT" "--disable-gost" &&
+			$MAKE &&
+			$MAKE install
+		) &&
+		build_ok=1
+		;;
 
-[ -d ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] \
-&& rm -rf ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO
+esac
 
-[ x$NODE_NAME = "xsolaris1" ] \
-&& gtar -xzf ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz
-
-[ ! x$NODE_NAME = "xsolaris1" ] \
-&& tar -xf ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO.tar.gz
-
-[ ! -d ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO ] && exit 1
-
-cd ldns-$VER_MAJOR.$VER_MINOR.$VER_MICRO
-
-[ x$NODE_NAME = "xmaster" ] \
-&& ./configure --prefix=$WORKSPACE --disable-gost && make && make install && exit 0
-
-[ x$NODE_NAME = "xsolaris-vm1" ] \
-&& ./configure --prefix=$WORKSPACE --disable-gost && make && make install && exit 0
-
-[ x$NODE_NAME = "xubuntu1" ] \
-&& ./configure --prefix=$WORKSPACE --disable-gost && make && make install && exit 0
-
-[ x$NODE_NAME = "xredhat1" ] \
-&& ./configure --prefix=$WORKSPACE --disable-gost && make && make install && exit 0
-
-[ x$NODE_NAME = "xsolaris1" ] \
-&& echo "Configure ldns" && ./configure --prefix=$WORKSPACE --disable-gost \
-&& echo "Make ldns" && gmake \
-&& echo "Make Install ldns" && gmake install && exit 0
- 
-[ x$NODE_NAME = "xfreebsd1" ] \
-&& ./configure --prefix=$WORKSPACE --disable-gost && make && make install && exit 0
+if [ "$build_ok" -eq 1 ]; then
+	set_build_ok botan || exit 1
+	exit 0
+fi
 
 exit 1

@@ -162,7 +162,7 @@ find_sha1sum ()
     local shasum
     local program
 
-    for program in sha1 shasum; do
+    for program in sha1 sha1sum shasum; do
     	shasum=`find_program "$program"`
     	if [ -n "$shasum" ]; then
     		local shasum_filename=`echo "$shasum" | sed 's%.*/%%'`
@@ -409,7 +409,7 @@ check_hash ()
     esac
 	
 	if [ -f "$filename" ]; then
-	    if [ $HASH_TYPE == $MD5SUM ]; then
+	    if [ "$HASH_TYPE" == "$MD5SUM" ]; then
 	        file_hash=`$HASH_TYPE "$filename" | awk '{print $4}'`
 	    else
 		    file_hash=`$HASH_TYPE "$filename" | awk '{print $1}'`
