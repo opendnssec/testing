@@ -18,13 +18,7 @@ case "$NODE_NAME" in
 			../configure "--prefix=$INSTALL_ROOT" "--with-pkcs11-softhsm=$INSTALL_ROOT/lib/libsofthsm.so" &&
 			$MAKE &&
 			$MAKE check
-		) &&
+		)
 		;;
 esac
 
-if [ "$build_ok" -eq 1 ]; then
-	set_build_ok softhsm || exit 1
-	exit 0
-fi
-
-exit 1
