@@ -395,7 +395,7 @@ check_hash ()
 	local file_hash
 
 # If the hash is empty then assume there is not one supplied for the package
-    if [ -z $hash ]; then
+    if [ $hash == "NONE" ]; then
         return 0
     fi
     
