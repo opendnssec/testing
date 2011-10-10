@@ -20,3 +20,4 @@ LDNS_FILENAME="ldns-$LDNS_VER_MAJOR.$LDNS_VER_MINOR.$LDNS_VER_PATCH.tar.gz"
 LDNS_URL="http://www.nlnetlabs.nl/downloads/ldns/$LDNS_FILENAME"
 SVN_REVISION="$SVN_REVISION.$LDNS_VER_MAJOR.$LDNS_VER_MINOR.$LDNS_VER_PATCH"
 
+# For SoftHSM see the configuration in jenkins
