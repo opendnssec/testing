@@ -162,7 +162,7 @@ find_sha1sum ()
     local shasum
     local program
 
-    for program in sha1 sha1sum shasum; do
+    for program in shasum sha1 sha1sum; do
     	shasum=`find_program "$program"`
     	if [ -n "$shasum" ]; then
     		local shasum_filename=`echo "$shasum" | sed 's%.*/%%'`
@@ -185,7 +185,7 @@ find_sha256sum ()
 	local shasum
 	local program
 	
-	for program in sha256sum shasum; do
+	for program in shasum sha256sum; do
 		shasum=`find_program "$program"`
 		if [ -n "$shasum" ]; then
 			local shasum_filename=`echo "$shasum" | sed 's%.*/%%'`
@@ -381,6 +381,7 @@ require ()
 	fi
 }
 
+# TODO: different versions of shasum sha1 sha1sum etc return different outputs so awk below will break
 check_hash ()
 {
     if [ -z "$1" -o -z "$2" ]; then
