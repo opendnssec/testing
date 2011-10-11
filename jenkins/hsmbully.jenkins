@@ -11,12 +11,12 @@ case "$NODE_NAME" in
 	freebsd* | \
 	ubuntu* )
 		(
-		    env
 			cd "$WORKSPACE/hsmbully" &&
 			sh autogen.sh &&
 			mkdir -p build &&
 			cd build &&
-			../configure "--prefix=$INSTALL_ROOT" "--with-pkcs11-softhsm=$INSTALL_ROOT/lib/libsofthsm.so" "--with-cunit=$INSTALL_ROOT" &&
+			../configure "--prefix=$INSTALL_ROOT" "--with-pkcs11-softhsm=$INSTALL_ROOT/lib/libsofthsm.so" \
+		        "--with-softhsm=$INSTALL_ROOT/bin/softhsm" "--with-cunit=$INSTALL_ROOT" &&
 			$MAKE &&
 			$MAKE check
 		)

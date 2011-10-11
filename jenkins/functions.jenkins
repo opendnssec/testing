@@ -372,7 +372,7 @@ set_build_ok ()
 require ()
 {
 	if [ -z "$1" ]; then
-		echo "usage: set_build_ok <name tag>" >&2
+		echo "usage: require <name tag>" >&2
 		exit 1
 	fi
 	
