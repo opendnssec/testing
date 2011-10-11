@@ -11,6 +11,7 @@ case "$NODE_NAME" in
 	freebsd* | \
 	ubuntu* )
 		(
+		    env
 			cd "$WORKSPACE/hsmbully" &&
 			sh autogen.sh &&
 			mkdir -p build &&
