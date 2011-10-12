@@ -10,7 +10,6 @@ build_ok=0
 case "$NODE_NAME" in
 	solaris* | \
 	redhat* | \
-#	freebsd* | \
 	ubuntu* )
 		(
 			cd "$WORKSPACE/softHSM" &&
