@@ -10,7 +10,6 @@ start_build botan
 # per node build
 build_ok=0
 case "$NODE_NAME" in
-#	solaris* | \
 	redhat* | \
 	freebsd* | \
 	ubuntu* )
@@ -26,25 +25,32 @@ case "$NODE_NAME" in
 		) &&
 		build_ok=1
 		;;
-# On Solaris 5.11 snv_151a it appears necessary to set --with-tr1-implementation=none (I don't think this applies with Botan >= 1.10.1)
-# We can also add checks
+		
 	solaris* )
+		# Need to ensure that the destination libbotan.so is not present or else you get an error about it
+		if [ -f $INSTALL_ROOT/lib/libbotan.so ]; then
+			rm $INSTALL_ROOT/lib/libbotan.so ||
+			exit 1
+		fi
+		
+		# Add path for install binary
+		append_path /usr/ucb
+		
 	    (
-	        cd "$WORKSPACE" &&
+   	        cd "$WORKSPACE" &&
 			gunzip -c "$botan_src" | tar xf - &&
 			cd Botan-$BOTAN_VER_MAJOR.$BOTAN_VER_MINOR.$BOTAN_VER_PATCH &&
+			# On Solaris 5.11 snv_151a it appears necessary to set --with-tr1-implementation=none (I don't think this applies with Botan >= 1.10.1)
 			./configure.py "--prefix=$INSTALL_ROOT" --with-tr1-implementation=none &&
+			# configure.py messes up the Makefile need to replace LN = ln -fs with LN = ln -f -s or you get
+			# The following command caused the error:
+			# cd /home/jenkins/workspace/root/trunk/lib; ln -fs libbotan-1.8.13.so libbotan.so
+			mv Makefile Makefile.orig &&
+        	sed 's/^LN *=.*$/LN = ln -f -s/' Makefile.orig > Makefile &&
 			$MAKE &&
 			$MAKE check &&
 			LD_LIBRARY_PATH=. ./check --test &&
-# configure.py messes up the Makefile need to replace LN = ln -fs with LN = ln -f -s or you get
-# The following command caused the error:
-# cd /home/jenkins/workspace/root/trunk/lib; ln -fs libbotan-1.8.13.so libbotan.so
-            gsed -i 's/^LN.*$/LN = ln -f -s/' Makefile &&
-# Need to ensure that the destination libbotan.so is not present or else you get an error about it
-            [ -f $INSTALL_ROOT/lib/libbotan.so ] && rm -f $INSTALL_ROOT/lib/libbotan.so &&
-# The path to the install binary is /usr/ucb/install
-			PATH=/usr/ucb:$PATH $MAKE install
+			$MAKE install
 		) &&
 		build_ok=1
 		;;
