@@ -27,7 +27,7 @@ case "$NODE_NAME" in
 			mkdir -p build &&
 			cd build &&
 			../configure $CONFIGURE &&
-			$MAKE &&
+			$MAKE
 #			$MAKE install
 		) &&
 		build_ok=1
