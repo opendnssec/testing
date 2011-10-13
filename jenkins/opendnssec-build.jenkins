@@ -8,13 +8,12 @@ start_build opendnssec
 # per node configs
 case "$NODE_NAME" in
 	solaris* )
-	    append_cflags -std=c99
-	    CONFIGURE="--prefix=$INSTALL_ROOT --with-cunit=$INSTALL_ROOT --with-database-backend=sqlite3 --with-dbname=opendnssec-build-test CFLAGS=-std=c99"
+	    CONFIGURE="--prefix=$INSTALL_ROOT --with-cunit=$INSTALL_ROOT --with-database-backend=sqlite3 --with-dbname=opendnssec-build-test --enable-timeshift --enable-audtior CFLAGS=-std=c99"
 	    ;;
 	redhat* | \
 	ubuntu* | \
 	freebsd* )
-		CONFIGURE="--prefix=$INSTALL_ROOT --with-cunit=$INSTALL_ROOT --with-database-backend=sqlite3 --with-dbname=opendnssec-build-test"
+		CONFIGURE="--prefix=$INSTALL_ROOT --with-cunit=$INSTALL_ROOT --with-database-backend=sqlite3 --with-dbname=opendnssec-build-test --enable-timeshift --enable-audtior"
 		;;
 esac
 
