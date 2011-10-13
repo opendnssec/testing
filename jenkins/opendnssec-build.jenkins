@@ -22,13 +22,13 @@ case "$NODE_NAME" in
 	freebsd* | \
 	ubuntu* )
 		(
-			cd opendnssec &&
+			cd OpenDNSSEC &&
 			sh autogen.sh &&
 			mkdir -p build &&
 			cd build &&
 			../configure $CONFIGURE &&
 			$MAKE &&
-			$MAKE install
+#			$MAKE install
 		) &&
 		build_ok=1
 		;;

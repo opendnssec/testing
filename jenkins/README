@@ -26,6 +26,8 @@ Files
 
 functions.jenkins         The main file with all the functions for the build
                           and test system.
+                          
+versions.jenkins          Version numbers, URL's and checksums for each package installed
 
 <program>-build.jenkins   Build file for <program>.
 
