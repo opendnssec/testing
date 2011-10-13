@@ -9,7 +9,7 @@ setup_softhsm()
         local SLOT=0
         local LABEL="OpenDNSSEC"
         local SOFTHSM_CONF=softhsm.conf
-        local SOFTHSM_TEMPLATE=$WORKSPACE/OpenDNSSEC/test/conf/softhsm.conf
+        local SOFTHSM_TEMPLATE=$WORKSPACE/OpenDNSSEC_test/conf/softhsm.conf
 
         rm -f $SOFTHSM_CONF
         mkdir -p `dirname $SOFTHSM_CONF`
@@ -33,7 +33,7 @@ setup_enforcer()
 
 setup_test_zones()
 {
-        cp $WORKSPACE/OpenDNSSEC/test/zonedata/* $INSTALL_ROOT/var/opendnssec/unsigned
+        cp $WORKSPACE/OpenDNSSEC_test/zonedata/* $INSTALL_ROOT/var/opendnssec/unsigned
 
         $util zone add -z  unknown.rr.org -p default
         $util zone add -z  example.com -p default
