@@ -2,7 +2,7 @@
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built opendnssec && exit 0
-require cuint
+require cunit
 start_build opendnssec
 
 # per node configs
