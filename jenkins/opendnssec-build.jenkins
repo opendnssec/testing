@@ -7,7 +7,10 @@ start_build opendnssec
 
 # per node configs
 case "$NODE_NAME" in
-	solaris* | \
+	solaris* )
+	    append_cflags -std=c99
+	    CONFIGURE="--prefix=$INSTALL_ROOT --with-cunit=$INSTALL_ROOT --with-database-backend=sqlite3 --with-dbname=opendnssec-build-test"
+	    ;;
 	redhat* | \
 	ubuntu* | \
 	freebsd* )
