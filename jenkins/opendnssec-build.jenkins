@@ -2,6 +2,7 @@
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built opendnssec && exit 0
+require cuint
 start_build opendnssec
 
 # per node configs
@@ -10,7 +11,7 @@ case "$NODE_NAME" in
 	redhat* | \
 	ubuntu* | \
 	freebsd* )
-		CONFIGURE="--prefix=$INSTALL_ROOT"
+		CONFIGURE="--prefix=$INSTALL_ROOT --with-cunit=$INSTALL_ROOT --with-database-backend=sqlite3 --with-dbname=opendnssec-build-test"
 		;;
 esac
 
@@ -27,8 +28,9 @@ case "$NODE_NAME" in
 			mkdir -p build &&
 			cd build &&
 			../configure $CONFIGURE &&
-			$MAKE
-#			$MAKE install
+			$MAKE &&
+			$MAKE check &&
+			$MAKE install
 		) &&
 		build_ok=1
 		;;
