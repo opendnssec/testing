@@ -59,7 +59,7 @@ case "$NODE_NAME" in
     			$MAKE install
     		) &&
     		build_ok=1
-    	elif [ $BOTAN_VERSION == "1.10.1" ]
+    	elif [ $BOTAN_VERSION == "1.10.1" ]; then
     	    (
        	        cd "$WORKSPACE" &&
     			gunzip -c "$botan_src" | tar xf - &&
