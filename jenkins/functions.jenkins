@@ -286,7 +286,7 @@ init_build ()
 	find_make || exit 1
 	find_wget || exit 1
 	find_hashs || exit 1
-#	find_shasum || exit 1
+    env
 }
 
 init_test ()
@@ -296,7 +296,7 @@ init_test ()
 	find_make || exit 1
 	find_wget || exit 1
 	find_hashs || exit 1
-#	find_shasum || exit 1
+    env
 }
 
 check_if_built ()
