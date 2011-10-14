@@ -1,6 +1,6 @@
 # init the build script
 source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
-SVN_REVISION=$BOTAN_${BOTAN_VERSION}_SVN_REVISION
+SVN_REVISION=${BOTAN_${BOTAN_VERSION}_SVN_REVISION}
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 #TODO: Consider moving to functions
@@ -8,7 +8,7 @@ INSTALL_ROOT=$INSTALL_ROOT/Botan_$BOTAN_VERSION
 mkdir -p $INSTALL_ROOT
 
 check_if_built botan && exit 0
-botan_src=`fetch_src "$BOTAN_$BOTAN_VERSION_URL" "$BOTAN_$BOTAN_VERSION_FILENAME" "$BOTAN_$BOTAN_VERSION_HASH"`
+botan_src=`fetch_src "$BOTAN_${BOTAN_VERSION}_URL" "$BOTAN_${BOTAN_VERSION}_FILENAME" "$BOTAN_${BOTAN_VERSION}_HASH"`
 start_build botan
 
 # per node build
