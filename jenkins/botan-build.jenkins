@@ -1,10 +1,14 @@
 # init the build script
 source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
-SVN_REVISION=$BOTAN_SVN_REVISION
+SVN_REVISION=$BOTAN_$BOTAN_VERSION_SVN_REVISION
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
+#TODO: Consider moving to functions
+INSTALL_ROOT=$INSTALL_ROOT/Botan_$BOTAN_VERSION
+mkdir -p $INSTALL_ROOT
+
 check_if_built botan && exit 0
-botan_src=`fetch_src "$BOTAN_URL" "$BOTAN_FILENAME" "$BOTAN_HASH"`
+botan_src=`fetch_src "$BOTAN_$BOTAN_VERSION_URL" "$BOTAN_$BOTAN_VERSION_FILENAME" "$BOTAN_$BOTAN_VERSION_HASH"`
 start_build botan
 
 # per node build
@@ -16,7 +20,7 @@ case "$NODE_NAME" in
 		(
 			cd "$WORKSPACE" &&
 			gunzip -c "$botan_src" | tar xf - &&
-			cd Botan-$BOTAN_VER_MAJOR.$BOTAN_VER_MINOR.$BOTAN_VER_PATCH &&
+			cd Botan-$BOTAN_VERSION &&
 			./configure.py "--prefix=$INSTALL_ROOT" &&
 			$MAKE &&
 			$MAKE check &&
@@ -27,32 +31,46 @@ case "$NODE_NAME" in
 		;;
 		
 	solaris* )
-		# Need to ensure that the destination libbotan.so is not present or else you get an error about it
-		if [ -f $INSTALL_ROOT/lib/libbotan.so ]; then
-			rm $INSTALL_ROOT/lib/libbotan.so ||
-			exit 1
-		fi
+	    if [ $BOTAN_VERSION == "1.8.13" ]; then
+    		# Need to ensure that the destination libbotan.so is not present or else you get an error about it
+    		if [ -f $INSTALL_ROOT/lib/libbotan.so ]; then
+    			rm $INSTALL_ROOT/lib/libbotan.so ||
+    			exit 1
+    		fi
 		
-		# Add path for install binary
-		append_path /usr/ucb
+    		# Add path for install binary
+    		append_path /usr/ucb
 		
-	    (
-   	        cd "$WORKSPACE" &&
-			gunzip -c "$botan_src" | tar xf - &&
-			cd Botan-$BOTAN_VER_MAJOR.$BOTAN_VER_MINOR.$BOTAN_VER_PATCH &&
-			# On Solaris 5.11 snv_151a it appears necessary to set --with-tr1-implementation=none (I don't think this applies with Botan >= 1.10.1)
-			./configure.py "--prefix=$INSTALL_ROOT" --with-tr1-implementation=none &&
-			# configure.py messes up the Makefile need to replace LN = ln -fs with LN = ln -f -s or you get
-			# The following command caused the error:
-			# cd /home/jenkins/workspace/root/trunk/lib; ln -fs libbotan-1.8.13.so libbotan.so
-			mv Makefile Makefile.orig &&
-        	sed 's/^LN *=.*$/LN = ln -f -s/' Makefile.orig > Makefile &&
-			$MAKE &&
-			$MAKE check &&
-			LD_LIBRARY_PATH=. ./check --test &&
-			$MAKE install
-		) &&
-		build_ok=1
+    	    (
+       	        cd "$WORKSPACE" &&
+    			gunzip -c "$botan_src" | tar xf - &&
+    			cd Botan-$BOTAN_VERSION &&
+    			# On Solaris 5.11 snv_151a it appears necessary to set --with-tr1-implementation=none (I don't think this applies with Botan >= 1.10.1)
+    			./configure.py "--prefix=$INSTALL_ROOT" --with-tr1-implementation=none &&
+    			# configure.py messes up the Makefile need to replace LN = ln -fs with LN = ln -f -s or you get
+    			# The following command caused the error:
+    			# cd /home/jenkins/workspace/root/trunk/lib; ln -fs libbotan-1.8.13.so libbotan.so
+    			mv Makefile Makefile.orig &&
+            	sed 's/^LN *=.*$/LN = ln -f -s/' Makefile.orig > Makefile &&
+    			$MAKE &&
+    			$MAKE check &&
+    			LD_LIBRARY_PATH=. ./check --test &&
+    			$MAKE install
+    		) &&
+    		build_ok=1
+    	elif [ $BOTAN_VERSION == "1.10.1" ]
+    	    (
+       	        cd "$WORKSPACE" &&
+    			gunzip -c "$botan_src" | tar xf - &&
+    			cd Botan-$BOTAN_VERSION &&
+    			./configure.py "--prefix=$INSTALL_ROOT" &&
+    			$MAKE &&
+    			$MAKE check &&
+    			LD_LIBRARY_PATH=. ./check --test &&
+    			$MAKE install
+    		) &&
+    		build_ok=1
+    	fi
 		;;
 
 esac
