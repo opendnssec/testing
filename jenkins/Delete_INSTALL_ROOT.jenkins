@@ -1,0 +1,2 @@
+source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
+rm -rf $INSTALL_ROOT

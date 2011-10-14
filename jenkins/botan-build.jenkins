@@ -5,7 +5,7 @@ SVN_REVISION=`eval echo \$\{BOTAN_${_BOTAN_VERSION}_SVN_REVISION\}`
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 #TODO: Consider moving to functions
-INSTALL_ROOT=$INSTALL_ROOT/Botan_${_BOTAN_VERSION}
+INSTALL_ROOT=$INSTALL_ROOT/Botan_${BOTAN_VERSION}
 mkdir -p $INSTALL_ROOT
 
 check_if_built botan && exit 0
