@@ -1,6 +1,6 @@
 # init the build script
 source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
-SVN_REVISION=$BOTAN_$BOTAN_VERSION_SVN_REVISION
+SVN_REVISION=$BOTAN_${BOTAN_VERSION}_SVN_REVISION
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 #TODO: Consider moving to functions
