@@ -1,11 +1,18 @@
 # init the build script
 source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
+
+# TODO: Consider moving to functions
+# $BOTAN_VERSION is supplied by Jenkins
+# But you can not have . in variable names so create an _ separated version
 _BOTAN_VERSION=`echo $BOTAN_VERSION | sed 's/\./_/g'`
+
 SVN_REVISION=`eval echo \$\{BOTAN_${_BOTAN_VERSION}_SVN_REVISION\}`
+
+#Set INSTALL_TAG here because it can not be set in jenkins matrix build
+INSTALL_TAG=Botan_${BOTAN_VERSION}
+
 source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
 
-#TODO: Consider moving to functions
-INSTALL_ROOT=$INSTALL_ROOT/Botan_${BOTAN_VERSION}
 mkdir -p $INSTALL_ROOT
 
 check_if_built botan && exit 0
@@ -30,7 +37,6 @@ case "$NODE_NAME" in
 		) &&
 		build_ok=1
 		;;
-		
 	solaris* )
 	    if [ $BOTAN_VERSION == "1.8.13" ]; then
     		# Need to ensure that the destination libbotan.so is not present or else you get an error about it
