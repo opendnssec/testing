@@ -9,7 +9,7 @@ INSTALL_ROOT=$INSTALL_ROOT/Botan_$BOTAN_VERSION
 mkdir -p $INSTALL_ROOT
 
 check_if_built botan && exit 0
-botan_src=`eval fetch_src "\$\{BOTAN_${BOTAN_VERSION}_URL\}" "\$\{BOTAN_${BOTAN_VERSION}_FILENAME\}" "\$\{BOTAN_${BOTAN_VERSION}_HASH\}"`
+botan_src=`eval fetch_src \$\{BOTAN_${BOTAN_VERSION}_URL\} \$\{BOTAN_${BOTAN_VERSION}_FILENAME\} \$\{BOTAN_${BOTAN_VERSION}_HASH\}`
 start_build botan
 
 # per node build
