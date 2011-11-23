@@ -1,0 +1,43 @@
+cat <<EOF > $INSTALL_ROOT/etc/opendnssec/conf.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <RepositoryList>
+
+            <Repository name="SoftHSM">
+                    <Module>$WORKSPACE_ROOT/root/${SOFTHSM_RELEASE}/${BOTAN_VERSION}/lib/libsofthsm.so</Module>
+                    <TokenLabel>OpenDNSSEC</TokenLabel>
+                    <PIN>1234</PIN>
+                    <SkipPublicKey/>
+            </Repository>
+
+    </RepositoryList>
+    <Common>
+            <Logging>
+                    <Syslog><Facility>local0</Facility></Syslog>
+            </Logging>
+            
+            <PolicyFile>$INSTALL_ROOT/etc/opendnssec/kasp.xml</PolicyFile>
+            <ZoneListFile>$INSTALL_ROOT/etc/opendnssec/zonelist.xml</ZoneListFile>
+
+    </Common>
+    <Enforcer>
+            <Datastore>
+                <MySQL>
+                    <Host>localhost</Host>
+                    <Database>KASPtest</Database>
+                    <Username>root</Username>
+                    <Password>root</Password>
+                </MySQL>
+            </Datastore>
+                    <Interval>PT3600S</Interval>
+    </Enforcer>
+    <Signer>
+        <WorkingDirectory>$INSTALL_ROOT/var/opendnssec/tmp</WorkingDirectory>
+        <WorkerThreads>4</WorkerThreads>
+    </Signer>
+    <Auditor>
+        <WorkingDirectory>$INSTALL_ROOT/var/opendnssec/tmp</WorkingDirectory>
+    </Auditor>
+
+</Configuration>
+EOF

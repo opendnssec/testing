@@ -1,0 +1,117 @@
+# This script runs OpenDNSSEC within jenkins. Running the test has to be done
+# in the install dir because of lack of a mechanism to specify the location of 
+# engine.sock
+
+source "$WORKSPACE/src/trunk/testing/jenkins/versions.jenkins" || exit 1
+# Run from the install directory
+# Enviroment variables passed in from jenkins jobs may contain hyphens and dots. 
+# This breaks if you try to use the value of the environment variable to build 
+# other environment variables so replace them with underscores.
+_OpenDNSSEC_BRANCH=`echo $OpenDNSSEC_BRANCH | sed 's/\-/_/g'`
+_OpenDNSSEC_BRANCH=`echo $_OpenDNSSEC_BRANCH | sed 's/\./_/g'`
+_SOFTHSM_RELEASE=`echo $SOFTHSM_RELEASE | sed 's/\-/_/g'`
+_SOFTHSM_RELEASE=`echo $_SOFTHSM_RELEASE | sed 's/\./_/g'`
+SVN_REVISION=`eval echo \$\{TEST_CODE_SVN_REVISION\}.\$\{${_OpenDNSSEC_BRANCH}_SVN_REVISION\}.\$\{${_SOFTHSM_RELEASE}_SVN_REVISION\}.\$\{BOTAN_VERSION\}.\$\{DATABASE_TYPE\}`
+
+# Install tag (and install root) are used in the test to locate the OpenDNSSEC installation
+INSTALL_TAG="${OpenDNSSEC_BRANCH}/${SOFTHSM_RELEASE}_${BOTAN_VERSION}_${DATABASE_TYPE}"
+source "$WORKSPACE/src/trunk/testing/jenkins/functions.jenkins" && init_test || exit 1
+
+# Only run test if built code exists 
+# checks that the SVN_REVISION in the OpenDNSSEC installation is the one we are using here.
+# check_if_built opendnssec || exit 1
+
+# Find BOTAN libs
+append_ld_library_path "$WORKSPACE_ROOT/root/$BOTAN_VERSION/lib"
+# Find SOFTHSM libs and bin
+append_ld_library_path "$WORKSPACE_ROOT/root/${SOFTHSM_RELEASE}/${BOTAN_VERSION}/lib"
+prepend_path "$WORKSPACE_ROOT/root/${SOFTHSM_RELEASE}/${BOTAN_VERSION}/bin"
+# Find OPENDNSSEC sbin, bin and lib
+prepend_path "$INSTALL_ROOT/bin"
+prepend_path "$INSTALL_ROOT/sbin"
+append_ld_library_path "$INSTALL_ROOT/lib"
+
+# Kill any previous tests that are still running.
+kill_old_signer_enforcer
+
+# Create softhsm config
+mkdir -p $INSTALL_ROOT/var/softhsm/
+echo "0:$INSTALL_ROOT/var/softhsm/slot0.db" > $INSTALL_ROOT/etc/softhsm.conf
+export SOFTHSM_CONF=$INSTALL_ROOT/etc/softhsm.conf
+
+# debug output to confirm which softhsm code is being run and what it in linking to.
+which softhsm
+ldd $WORKSPACE_ROOT/root/${SOFTHSM_RELEASE}/${BOTAN_VERSION}/bin/softhsm
+softhsm -v
+
+# Init softHSM
+[ -e $INSTALL_ROOT/var/softhsm/slot0.db ] && rm $INSTALL_ROOT/var/softhsm/slot0.db
+softhsm --init-token --slot 0 --label "OpenDNSSEC" --so-pin 1234 --pin 1234
+
+# Use default zonelist.xml
+cp $INSTALL_ROOT/etc/opendnssec/zonelist.xml.sample $INSTALL_ROOT/etc/opendnssec/zonelist.xml
+
+# Create conf.xml depending on database type.
+if [ x$DATABASE_TYPE == "xmysql" ] ; then
+  source $WORKSPACE/src/trunk/testing/jenkins/test_xml_files/conf_mysql.xml.in
+elif [ x$DATABASE_TYPE == "xsqlite3" ] ; then
+  source $WORKSPACE/src/trunk/testing/jenkins/test_xml_files/conf_sqlite3.xml.in
+fi
+
+# Create kasp.xml
+cp $WORKSPACE/src/trunk/testing/jenkins/test_xml_files/kasp.xml $INSTALL_ROOT/etc/opendnssec/kasp.xml
+
+# Run ods-ksmutil
+which ods-ksmutil
+ldd `which ods-ksmutil`
+echo y | ods-ksmutil setup || exit 1
+
+# Clean up after old tests.
+[ -e $INSTALL_ROOT/var/opendnssec/tmp/ ] && rm -rf $INSTALL_ROOT/var/opendnssec/tmp
+mkdir $INSTALL_ROOT/var/opendnssec/tmp
+
+[ -e $INSTALL_ROOT/var/opendnssec/signconf ] && rm -rf $INSTALL_ROOT/var/opendnssec/signconf
+mkdir $INSTALL_ROOT/var/opendnssec/signconf
+
+[ -e $INSTALL_ROOT/var/opendnssec/signed ] && rm -rf $INSTALL_ROOT/var/opendnssec/signed
+mkdir $INSTALL_ROOT/var/opendnssec/signed
+
+[ -e $INSTALL_ROOT/var/opendnssec/unsigned/example.net/ ] && rm -rf $INSTALL_ROOT/var/opendnssec/unsigned/example.net/
+mkdir $INSTALL_ROOT/var/opendnssec/unsigned/example.net/
+
+[ -e $INSTALL_ROOT/var/opendnssec/unsigned/example.com ] && rm $INSTALL_ROOT/var/opendnssec/unsigned/example.com
+
+#1500028 rr in signed zone
+SIGNEDDELIGATIONRRS=1500028
+perl src/trunk/testing/zonegen.pl --zonename example.com -nrr=1000000 -nns=2 --pns=100 --nzones 1 --output $INSTALL_ROOT/var/opendnssec/unsigned/
+
+#nrr=100 -> 108rr in zone -> 107 rrsets -> 428 rr in signed zone
+SIGNEDRRS=428
+perl src/trunk/testing/zonegen.pl --zonename example.net -nrr=100 -pa=100 --nzones $NUMBER_ZONES --output $INSTALL_ROOT/var/opendnssec/unsigned/example.net/
+
+ods-ksmutil zone add --zone example.com --policy default
+
+(cd $INSTALL_ROOT/var/opendnssec/unsigned/example.net ; for file in * ; do ods-ksmutil zone add --zone $file --policy default --input $INSTALL_ROOT/var/opendnssec/unsigned/example.net/$file ; done)
+
+COUNT=$[$NUMBER_ZONES+1]
+
+ods-enforcerd -d -1
+ods-ksmutil keys list > /tmp/keylist
+cat /tmp/keylist
+[ `grep ZSK /tmp/keylist | wc -l` -ne $COUNT ] && exit 1
+[ `grep KSK /tmp/keylist | wc -l` -ne $COUNT ] && exit 1
+[ `grep publish /tmp/keylist | wc -l` -ne $COUNT ] && exit 1
+[ `grep active /tmp/keylist | wc -l` -ne $COUNT ] && exit 1
+
+ods-signerd -d -1
+
+#Count signed zones
+SIGNED=`ls -1 $INSTALL_ROOT/var/opendnssec/signed | wc -l`
+[ $SIGNED -ne $COUNT ] && exit 1
+
+#Check number of RR's in each small zone
+(cd $INSTALL_ROOT/var/opendnssec/signed ; for file in *example.net ; do [ `cat $file | wc -l` -ne $SIGNEDRRS ] && exit 1 ; done)
+(cd $INSTALL_ROOT/var/opendnssec/signed ; [ `cat example.com | wc -l` -ne $SIGNEDDELIGATIONRRS ] && exit 1)
+exit 0
+
+

@@ -1,9 +1,11 @@
-# init the build script
-source "$WORKSPACE/testing/jenkins/versions.jenkins" || exit 1
+source "$WORKSPACE/src/trunk/testing/jenkins/versions.jenkins" || exit 1
+
 SVN_REVISION=$LDNS_SVN_REVISION
-source "$WORKSPACE/testing/jenkins/functions.jenkins" && init_build || exit 1
+INSTALL_TAG=LDNS_$LDNS_VER_MAJOR.$LDNS_VER_MINOR.$LDNS_VER_PATCH
+source "$WORKSPACE/src/trunk/testing/jenkins/functions.jenkins" && init_build || exit 1
 
 check_if_built ldns && exit 0
+
 ldns_src=`fetch_src "$LDNS_URL" "$LDNS_FILENAME" "$LDNS_HASH"`
 start_build ldns
 
@@ -12,6 +14,7 @@ build_ok=0
 case "$NODE_NAME" in
 	solaris* | \
 	redhat* | \
+	centos* | \
 	freebsd* | \
 	ubuntu* )
 		(

@@ -76,37 +76,20 @@ append_ld_library_path ()
 	fi
 }
 
+# Find a suitable "fakeroot" to install all the builds in.
+# (JAD -> JL: There is no need to work up from a sub directory of the
+# workspace directory as we always know where $HOME is.
+# However keep this function and the $WORKSPACE_ROOT for 
+# backwards compatibility.)
 find_jenkins_workspace_root ()
 {
-	if [ -z "$WORKSPACE" -o ! -d "$WORKSPACE" ]; then
-		echo "find_jenkins_workspace_root: Unable to find workspace root since no WORKSPACE has been defined" >&2
+	if [ -z "$HOME" -o ! -d "$HOME" ]; then
+		echo "find_jenkins_workspace_root: Unable to find workspace root since no HOME has been defined" >&2
 		return -1
 	fi
 
-	local workspace="$WORKSPACE"
-	local max_iter=20
-	local currdir
-	
-	while [ "$max_iter" -gt 0 ]; do
-		# check if the last dir on the path is workspace
-		currdir=`echo "$workspace" | sed 's%.*/%%'`
-		if [ "$currdir" = "workspace" ]; then
-			break
-		fi
-		
-		# remove the last dir on the path
-		workspace=`echo "$workspace" | sed 's%/[^/]*$%%'`
-		
-		max_iter=$(( max_iter - 1))
-	done
-
-	if [ -n "$workspace" -a "$max_iter" -gt 0 ]; then
-		WORKSPACE_ROOT="$workspace"
-		return
-	fi
-
-	echo "find_jenkins_workspace_root: Failed to find workspace root in WORKSPACE=$WORKSPACE" >&2
-	return 1
+	WORKSPACE_ROOT="$HOME"
+	return
 }
 
 find_program ()
@@ -230,6 +213,18 @@ find_wget ()
 	return 1
 }
 
+# Locate ccache.
+# prepend_path checks for the directories existence.
+# No need to check exit code as will always fall back to regular gcc etc.
+find_ccache ()
+{
+    prepend_path "/opt/ccache/bin"
+    prepend_path "/usr/local/libexec/ccache"
+    prepend_path "/usr/lib/ccache"
+    # debug output
+    ls -l `which gcc`
+}
+
 setup_install_root ()
 {
 	if [ -n "$INSTALL_ROOT" ]; then
@@ -249,7 +244,7 @@ setup_install_root ()
 	
 	if [ -n "$INSTALL_TAG" ]; then
 		if [ ! -d "$WORKSPACE_ROOT/root/$INSTALL_TAG" ]; then
-			if ! mkdir "$WORKSPACE_ROOT/root/$INSTALL_TAG"; then
+			if ! mkdir -p "$WORKSPACE_ROOT/root/$INSTALL_TAG"; then
 				echo "setup_install_root: Unable to create INSTALL_ROOT at $WORKSPACE_ROOT/root/$INSTALL_TAG" >&2
 				return 1
 			fi
@@ -286,6 +281,7 @@ init_build ()
 	find_make || exit 1
 	find_wget || exit 1
 	find_hashs || exit 1
+	find_ccache
     env
 }
 
@@ -316,7 +312,7 @@ check_if_built ()
 	if [ -f "$INSTALL_ROOT/.$name_tag.build" ]; then
 		local build_svn_rev=`cat "$INSTALL_ROOT/.$name_tag.build"`
 		
-		if [ "$SVN_REVISION" = "$build_svn_rev" ]; then
+		if [ "x$SVN_REVISION" == "x$build_svn_rev" ]; then
 			return
 		fi
 	fi
@@ -478,4 +474,19 @@ fetch_src ()
 	fi
 	
 	echo "$path_filename"
+}
+
+kill_old_signer_enforcer ()
+{
+  [ -e $INSTALL_ROOT/var/run/opendnssec/enforcerd.pid ] && kill `cat $INSTALL_ROOT/var/run/opendnssec/enforcerd.pid`
+  sleep 5
+  [ -e $INSTALL_ROOT/var/run/opendnssec/enforcerd.pid ] && kill -9 `cat $INSTALL_ROOT/var/run/opendnssec/enforcerd.pid` \
+      && rm $INSTALL_ROOT/var/run/opendnssec/enforcerd.pid
+
+  [ -e $INSTALL_ROOT/var/run/opendnssec/signerd.pid ] && kill `cat $INSTALL_ROOT/var/run/opendnssec/signerd.pid`
+  sleep 5
+  [ -e $INSTALL_ROOT/var/run/opendnssec/signerd.pid ] && kill -9 `cat $INSTALL_ROOT/var/run/opendnssec/signerd.pid` \
+      && rm $INSTALL_ROOT/var/run/opendnssec/signerd.pid
+  [ -e $INSTALL_ROOT/var/run/opendnssec/engine.sock ] && rm $INSTALL_ROOT/var/run/opendnssec/engine.sock
+
 }

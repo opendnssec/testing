@@ -28,10 +28,22 @@ functions.jenkins         The main file with all the functions for the build
                           and test system.
                           
 versions.jenkins          Version numbers, URL's and checksums for each package installed
+                          
+Checkout_<code>.jenkins   Checkout job for <code> which also triggers the 
+                          Build_X.jenkins script.
 
-<program>-build.jenkins   Build file for <program>.
+Build_<program>.jenkins   Build file for <program>.
 
-<program>-test.jenkins    Test file for <program>.
+Util_<action>.jenkins     Utility script to perform <action>.
+
+Test_<program>.jenkins    Test file for <program>.
+
+
+Job names
+=========
+
+All jenkins jobs run a single script and are named identically to the files as
+above. 
 
 
 Environment variables
@@ -40,8 +52,9 @@ Environment variables
 See https://jenkins.opendnssec.org/env-vars.html for jenkins built in
 variables.
 
-WORKSPACE        The workspace for the currect jenkins project, used for
-                 building WORKSPACE_ROOT.
+HOME             Jenkins home directory. 
+
+WORKSPACE        The workspace for the currect jenkins project.
 
 WORKSPACE_ROOT   This is the root directory of the jenkins workspace, used
                  building INSTALL_ROOT.
