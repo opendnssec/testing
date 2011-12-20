@@ -197,5 +197,5 @@ Each deletegation gets 2 new NS with glue, where 25 percent will also have IPv6.
 30 percent of the domains will have a DS RR.
 
 
-  perl zonegen.pl --zonename largetld --domains 1000000 --ns 2 \
-                  --ds 30 --aaaa 25 --output largetld.zone
+  perl tldgen.pl --zonename largetld --domains 1000000 --ns 2 \
+                 --ds 30 --aaaa 25 --output largetld.zone
