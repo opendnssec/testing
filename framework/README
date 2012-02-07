@@ -1,0 +1,6 @@
+This is the master framework lib.sh, it should be updated here and copied to:
+trunk/OpenDNSSEC/testing
+trunk/softHSM/testing
+branches/OpenDNSSEC-1.3/testing
+branches/OpenDNSSEC-enforcer-ng/testing
+release/softHSM-1.3.1/testing
