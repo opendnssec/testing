@@ -3,11 +3,11 @@ trunk/OpenDNSSEC/testing
 trunk/softHSM/testing
 branches/OpenDNSSEC-1.3/testing
 branches/OpenDNSSEC-enforcer-ng/testing
-releases/softHSM-1.3.1/testing
+releases/softHSM-1.3.2/testing
 
 Quick script if you are in trunk/testing/framework:
 cp lib.sh ../../OpenDNSSEC/testing/ &&
 cp lib.sh ../../softHSM/testing/ &&
 cp lib.sh ../../../branches/OpenDNSSEC-1.3/testing/ &&
 cp lib.sh ../../../branches/OpenDNSSEC-enforcer-ng/testing/ &&
-cp lib.sh ../../../releases/softHSM-1.3.1/testing/
+cp lib.sh ../../../releases/softHSM-1.3.2/testing/
