@@ -1,0 +1,17 @@
+# The Authorized Keys for gaining access to the test environment.
+#
+# Add a section starting with your name then your keys and separate 
+# sections with newline like this:
+# 
+#   # jerry
+#   <key 1>
+#   <key 2>
+#
+#   # someone-else
+#   <key ...>
+#
+#BEGIN
+
+
+
+#END
