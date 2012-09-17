@@ -45,7 +45,7 @@ case "$1" in
     fi
     rm -f -- "$HOME/test-environment-access/tmp/authorized_keys.$$" &&
     wget -O "$HOME/test-environment-access/tmp/authorized_keys.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/authorized_keys" &&
-    chmod 640 -- "$HOME/test-environment-access/tmp/authorized_keys.$$" &&
+    chmod 640 "$HOME/test-environment-access/tmp/authorized_keys.$$" &&
     mv -- "$HOME/test-environment-access/tmp/authorized_keys.$$" "$HOME/.ssh/authorized_keys" &&
     exec sh -x "$HOME/test-environment-access/update.sh" clean "$$" ||
     {
