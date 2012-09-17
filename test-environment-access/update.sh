@@ -37,7 +37,7 @@ case "$1" in
     ;;
   authorized_keys )
     if [ "$0" != "$HOME/test-environment-access/update.sh" ]; then
-      cp -a -- "$0" "$HOME/test-environment-access/update.sh" ||
+      cp -p -- "$0" "$HOME/test-environment-access/update.sh" ||
       {
         echo "Installing new update.sh failed, exit."
         exit 7
