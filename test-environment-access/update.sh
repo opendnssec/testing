@@ -1,5 +1,8 @@
 #!/bin/sh -x
 
+PATH="$PATH:/usr/local/bin"
+export PATH
+
 if ! which wget >/dev/null 2>/dev/null; then
   echo "Missing wget, exit."
   exit 1
