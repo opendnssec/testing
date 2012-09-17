@@ -29,7 +29,7 @@ case "$1" in
   update )
     rm -f -- "$HOME/test-environment-access/tmp/update.sh.$$" &&
     wget -O "$HOME/test-environment-access/tmp/update.sh.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/update.sh" &&
-    exec "$HOME/test-environment-access/tmp/update.sh.$$" authorized_keys ||
+    exec sh "$HOME/test-environment-access/tmp/update.sh.$$" authorized_keys ||
     {
       echo "Update failed, exit."
       exit 6
@@ -47,7 +47,7 @@ case "$1" in
     wget -O "$HOME/test-environment-access/tmp/authorized_keys.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/authorized_keys" &&
     chmod 640 -- "$HOME/test-environment-access/tmp/authorized_keys.$$" &&
     mv -- "$HOME/test-environment-access/tmp/authorized_keys.$$" "$HOME/.ssh/authorized_keys" &&
-    exec "$HOME/test-environment-access/update.sh" clean "$$" ||
+    exec sh "$HOME/test-environment-access/update.sh" clean "$$" ||
     {
       echo "Installing new authorized_keys failed, exit."
       exit 8
