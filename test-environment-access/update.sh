@@ -31,7 +31,13 @@ fi
 case "$1" in
   update )
     rm -f -- "$HOME/test-environment-access/tmp/update.sh.$$" &&
-    wget --ca-certificate="$HOME/test-environment-access/startssl-ca-bundle.pem" -O "$HOME/test-environment-access/tmp/update.sh.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/update.sh" &&
+    if ! wget --ca-certificate="$HOME/test-environment-access/startssl-ca-bundle.pem" -O "$HOME/test-environment-access/tmp/update.sh.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/update.sh"; then
+    	if [ -f "$HOME/test-environment-access/ALLOW_INSECURE" ]; then
+    		wget --no-check-certificate -O "$HOME/test-environment-access/tmp/update.sh.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/update.sh"
+    	else
+    		false
+    	fi
+	fi &&
     exec sh -x "$HOME/test-environment-access/tmp/update.sh.$$" authorized_keys ||
     {
       echo "Update failed, exit."
@@ -60,7 +66,13 @@ case "$1" in
       }
     fi
     rm -f -- "$HOME/test-environment-access/tmp/authorized_keys.$$" &&
-    wget --ca-certificate="$HOME/test-environment-access/startssl-ca-bundle.pem" -O "$HOME/test-environment-access/tmp/authorized_keys.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/authorized_keys" &&
+    if ! wget --ca-certificate="$HOME/test-environment-access/startssl-ca-bundle.pem" -O "$HOME/test-environment-access/tmp/authorized_keys.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/authorized_keys"; then
+    	if [ -f "$HOME/test-environment-access/ALLOW_INSECURE" ]; then
+    		wget --no-check-certificate -O "$HOME/test-environment-access/tmp/authorized_keys.$$" "https://svn.opendnssec.org/trunk/testing/test-environment-access/authorized_keys"
+    	else
+    		false
+    	fi
+	fi &&
     chmod 640 "$HOME/test-environment-access/tmp/authorized_keys.$$" &&
     mv -- "$HOME/test-environment-access/tmp/authorized_keys.$$" "$HOME/.ssh/authorized_keys" &&
     exec sh -x "$HOME/test-environment-access/update.sh" clean "$$" ||
