@@ -4,7 +4,7 @@ trunk/softHSM/testing
 trunk/softHSMv2/testing
 branches/OpenDNSSEC-1.3/testing
 branches/OpenDNSSEC-enforcer-ng/testing
-releases/softHSM-1.3.3/testing
+releases/softHSM-1.3.4/testing
 
 Quick script if you are in trunk/testing/framework:
 cp lib.sh ../../OpenDNSSEC/testing/ &&
@@ -12,7 +12,7 @@ cp lib.sh ../../softHSM/testing/ &&
 cp lib.sh ../../softHSMv2/testing/ &&
 cp lib.sh ../../../branches/OpenDNSSEC-1.3/testing/ &&
 cp lib.sh ../../../branches/OpenDNSSEC-enforcer-ng/testing/ &&
-cp lib.sh ../../../releases/softHSM-1.3.3/testing/
+cp lib.sh ../../../releases/softHSM-1.3.4/testing/
 
 Quick svn command:
-svn status lib.sh ../../OpenDNSSEC/testing/lib.sh ../../softHSM/testing/lib.sh ../../softHSMv2/testing/lib.sh ../../../branches/OpenDNSSEC-1.3/testing/lib.sh ../../../branches/OpenDNSSEC-enforcer-ng/testing/lib.sh ../../../releases/softHSM-1.3.3/testing/lib.sh
+svn status lib.sh ../../OpenDNSSEC/testing/lib.sh ../../softHSM/testing/lib.sh ../../softHSMv2/testing/lib.sh ../../../branches/OpenDNSSEC-1.3/testing/lib.sh ../../../branches/OpenDNSSEC-enforcer-ng/testing/lib.sh ../../../releases/softHSM-1.3.4/testing/lib.sh
