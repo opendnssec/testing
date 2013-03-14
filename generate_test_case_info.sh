@@ -17,12 +17,13 @@ generate_test_info() {
 		test_status="OFF"
 	fi
 	# Replace any commas with dashes since we will write to a csv file	
-	test_description=`grep "^#TEST:" test.sh | sed s/#TEST://g | sed s/,/-/g` 
+	test_description=`grep "^#TEST:" test.sh | sed s/#TEST://g | sed s/,/-/g`
+	test_disabled=`grep "^#DISABLED:" test.sh | sed s/#DISABLED://g | sed s/,/-/g` 
 	# Just extract the issue identifier
 	test_issues=`grep "^#OPENDNSSEC\|^#SUPPORT" test.sh | sed s/#//g | sed 's/ .*//' `
 	test_todo=`grep "^#TODO:" test.sh | sed s/#TODO://g | sed s/,/-/g` 
 	
- 	echo $1","$test_path","$test_status","$test_description","$test_issues","$test_todo >> $OUTPUT_FILE
+ 	echo $1","$test_path","$test_status","$test_disabled","$test_description","$test_issues","$test_todo >> $OUTPUT_FILE
 
 }
 
@@ -48,7 +49,7 @@ pwd=`pwd`
 echo "Searching top level directory "$pwd" for tests"
 OUTPUT_FILE=$pwd/$OUTPUT_FILE_NAME
 rm $OUTPUT_FILE
-echo "Directory,Name,Status,Description,Issues,To do" > $OUTPUT_FILE
+echo "Directory,Name,Status,Disabled,Description,Issues,To do" > $OUTPUT_FILE
 
 for LOCAL_TEST_DIR in test-cases.d test-cases-daily.d test-cases-weekly.d; do
 
