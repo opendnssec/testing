@@ -200,4 +200,7 @@ if [ $RUN_TESTS -eq 1 ] ; then
   chmod +x test-opendnssec.sh
   ./test-opendnssec.sh | grep "#####"
   chmod -x test-opendnssec.sh
+  chmod +x test-daily-opendnssec.sh
+  ./test-daily-opendnssec.sh | grep "#####"
+  chmod -x test-daily-opendnssec.sh
 fi
