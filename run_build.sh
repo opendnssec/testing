@@ -24,6 +24,7 @@ export WORKSPACE_ROOT=~/workspace
 export BLAT=0
 export PATCH_SOFTHSM=""
 export PATCH_OPENDNSSEC=""
+export RUN_TESTS=0
 
 usage () {
     echo
@@ -54,11 +55,12 @@ usage () {
     echo "  -r delete install and reinstall"
     echo "  -w <path> specify workspace (default ~/workspace)"
     echo "  -d run in bash debug mode"
+    echo "  -t run tests"
     echo "  -h this help"
     exit 0
 }
 
-while getopts ":7u:U:p:P:fcmlsSorw:dh" opt; do
+while getopts ":7u:U:p:P:fcmlsSorw:dth" opt; do
     case $opt in
         7  ) BUILD37X=1 ;;
         u  ) URL_SOFTHSM=$OPTARG ;;
@@ -75,6 +77,7 @@ while getopts ":7u:U:p:P:fcmlsSorw:dh" opt; do
         r  ) BLAT=1 ;;
         w  ) WORKSPACE_ROOT=$OPTARG ;;
         d  ) set -x ;;
+        t  ) RUN_TESTS=1 ;;
         h  ) usage ;;
         \? ) usage ;;
     esac
@@ -187,3 +190,14 @@ else
   fi
 fi
 
+if [ $RUN_TESTS -eq 1 ] ; then
+  echo "Testing OpenDNSSEC"
+  cd $WORKSPACE_ROOT/OpenDNSSEC/testing
+  export INSTALL_TAG=local-test
+  export WORKSPACE=`pwd`
+  export SVN_REVISION=1
+  rm -f $WORKSPACE_ROOT/root/$INSTALL_TAG/.opendnssec.ok.test $WORKSPACE_ROOT/root/$INSTALL_TAG/.opendnssec.test 
+  chmod +x test-opendnssec.sh
+  ./test-opendnssec.sh | grep "#####"
+  chmod -x test-opendnssec.sh
+fi
