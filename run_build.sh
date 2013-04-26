@@ -44,7 +44,7 @@ usage () {
     echo "  -p </path/file> patch file to apply to the checked out softHSM."
     echo "  -P </path/file> patch file to apply to the checked out OpenDNSSEC."
     echo "  -f force overwriting of the checked out code if the URL changes"
-    echo "  -p prevent any checkout"
+    echo "  -c prevent any checkout"
     echo "  -7 enable building of sqlite 3.7.X"
     echo "  -m build against mysql"
     echo "  -l force rebuild of ldns"
@@ -58,7 +58,7 @@ usage () {
     exit 0
 }
 
-while getopts ":7u:U:p:P:fpmlsSorw:dh" opt; do
+while getopts ":7u:U:p:P:fcmlsSorw:dh" opt; do
     case $opt in
         7  ) BUILD37X=1 ;;
         u  ) URL_SOFTHSM=$OPTARG ;;
@@ -66,7 +66,7 @@ while getopts ":7u:U:p:P:fpmlsSorw:dh" opt; do
         p  ) PATCH_SOFTHSM=$OPTARG ;;
         P  ) PATCH_OPENDNSSEC=$OPTARG ;;
         f  ) FORCE_SVN_RM=1 ;;
-        p  ) PREVENT_CO=1 ;;
+        c  ) PREVENT_CO=1 ;;
         m  ) BUILD_MYSQL=1 ;;
         l  ) FORCE_LDNS=1 ;;
         s  ) FORCE_SQLITE37X=1 ;;
