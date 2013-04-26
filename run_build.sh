@@ -18,8 +18,8 @@ export FORCE_SOFTHSM=0
 export FORCE_OPENDNSSEC=0
 export PREVENT_CO=0
 export FORCE_SVN_RM=0
-export URL_SOFTHSM="http://svn.opendnssec.org/trunk/softHSM/"
-export URL_OPENDNSSEC="http://svn.opendnssec.org/trunk/OpenDNSSEC/"
+export URL_SOFTHSM="http://svn.opendnssec.org/trunk/softHSM"
+export URL_OPENDNSSEC="http://svn.opendnssec.org/trunk/OpenDNSSEC"
 export WORKSPACE_ROOT=~/workspace
 export BLAT=0
 export PATCH_SOFTHSM=""
@@ -144,7 +144,7 @@ if [ $PATCH_SOFTHSM ] ; then
 fi
 export WORKSPACE=`pwd`
 export SVN_REVISION=1
-cd build && make clean
+[ -d build ] && cd build && make clean
 cd $WORKSPACE_ROOT/softHSM
 if [ $BUILD37X -eq 1 ] ; then
   sed 's|--with-sqlite3=.*\&\&|\&\&|' testing/build-softhsm.sh \
@@ -167,7 +167,7 @@ if [ $PATCH_OPENDNSSEC ] ; then
 fi
 export WORKSPACE=`pwd`
 export SVN_REVISION=1
-cd build && make clean
+[ -d build ] && cd build && make clean
 cd $WORKSPACE_ROOT/OpenDNSSEC
 if [ $BUILD37X -eq 1 ] ; then
   sed 's|--with-sqlite3=.*\&\&|\&\&|' testing/build-opendnssec.sh \
