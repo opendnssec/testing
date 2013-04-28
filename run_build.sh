@@ -25,6 +25,7 @@ export BLAT=0
 export PATCH_SOFTHSM=""
 export PATCH_OPENDNSSEC=""
 export RUN_TESTS=0
+export RUN_DAILY_TESTS=0
 
 usage () {
     echo
@@ -56,11 +57,12 @@ usage () {
     echo "  -w <path> specify workspace (default ~/workspace)"
     echo "  -d run in bash debug mode"
     echo "  -t run tests"
+    echo "  -T run daily tests"
     echo "  -h this help"
     exit 0
 }
 
-while getopts ":7u:U:p:P:fcmlsSorw:dth" opt; do
+while getopts ":7u:U:p:P:fcmlsSorw:dtTh" opt; do
     case $opt in
         7  ) BUILD37X=1 ;;
         u  ) URL_SOFTHSM=$OPTARG ;;
@@ -78,6 +80,7 @@ while getopts ":7u:U:p:P:fcmlsSorw:dth" opt; do
         w  ) WORKSPACE_ROOT=$OPTARG ;;
         d  ) set -x ;;
         t  ) RUN_TESTS=1 ;;
+	T  ) RUN_DAILY_TESTS=1 ;;
         h  ) usage ;;
         \? ) usage ;;
     esac
@@ -147,7 +150,7 @@ if [ $PATCH_SOFTHSM ] ; then
 fi
 export WORKSPACE=`pwd`
 export SVN_REVISION=1
-[ -d build ] && cd build && make clean
+[ -d build ] && rm -rf build
 cd $WORKSPACE_ROOT/softHSM
 if [ $BUILD37X -eq 1 ] ; then
   sed 's|--with-sqlite3=.*\&\&|\&\&|' testing/build-softhsm.sh \
@@ -170,7 +173,7 @@ if [ $PATCH_OPENDNSSEC ] ; then
 fi
 export WORKSPACE=`pwd`
 export SVN_REVISION=1
-[ -d build ] && cd build && make clean
+[ -d build ] && rm -rf build
 cd $WORKSPACE_ROOT/OpenDNSSEC
 if [ $BUILD37X -eq 1 ] ; then
   sed 's|--with-sqlite3=.*\&\&|\&\&|' testing/build-opendnssec.sh \
@@ -200,6 +203,15 @@ if [ $RUN_TESTS -eq 1 ] ; then
   chmod +x test-opendnssec.sh
   ./test-opendnssec.sh | grep "#####"
   chmod -x test-opendnssec.sh
+fi
+
+if [ $RUN_DAILY_TESTS -eq 1 ] ; then
+  echo "Testing OpenDNSSEC with daily tests"
+  cd $WORKSPACE_ROOT/OpenDNSSEC/testing
+  export INSTALL_TAG=local-test
+  export WORKSPACE=`pwd`
+  export SVN_REVISION=1
+  rm -f $WORKSPACE_ROOT/root/$INSTALL_TAG/.daily-opendnssec.ok.test $WORKSPACE_ROOT/root/$INSTALL_TAG/.daily-opendnssec.test
   chmod +x test-daily-opendnssec.sh
   ./test-daily-opendnssec.sh | grep "#####"
   chmod -x test-daily-opendnssec.sh
