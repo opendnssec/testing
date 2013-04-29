@@ -26,6 +26,8 @@ export PATCH_SOFTHSM=""
 export PATCH_OPENDNSSEC=""
 export RUN_TESTS=0
 export RUN_DAILY_TESTS=0
+export LOUD=0
+export SPECIFIC_TEST=""
 
 usage () {
     echo
@@ -57,12 +59,14 @@ usage () {
     echo "  -w <path> specify workspace (default ~/workspace)"
     echo "  -d run in bash debug mode"
     echo "  -t run tests"
+    echo "  -v <test-name> run a specific test"
     echo "  -T run daily tests"
+    echo "  -L LOUD"
     echo "  -h this help"
     exit 0
 }
 
-while getopts ":7u:U:p:P:fcmlsSorw:dtTh" opt; do
+while getopts ":7u:U:p:P:fcmlsSorw:dtiv:TLh" opt; do
     case $opt in
         7  ) BUILD37X=1 ;;
         u  ) URL_SOFTHSM=$OPTARG ;;
@@ -80,7 +84,9 @@ while getopts ":7u:U:p:P:fcmlsSorw:dtTh" opt; do
         w  ) WORKSPACE_ROOT=$OPTARG ;;
         d  ) set -x ;;
         t  ) RUN_TESTS=1 ;;
+	v  ) SPECIFIC_TEST=$OPTARG ;;
 	T  ) RUN_DAILY_TESTS=1 ;;
+	L  ) LOUD=1 ;;
         h  ) usage ;;
         \? ) usage ;;
     esac
@@ -201,8 +207,28 @@ if [ $RUN_TESTS -eq 1 ] ; then
   export SVN_REVISION=1
   rm -f $WORKSPACE_ROOT/root/$INSTALL_TAG/.opendnssec.ok.test $WORKSPACE_ROOT/root/$INSTALL_TAG/.opendnssec.test 
   chmod +x test-opendnssec.sh
-  ./test-opendnssec.sh | grep "#####"
+  if [ $LOUD -eq 1 ] ; then
+    ./test-opendnssec.sh
+  else
+    ./test-opendnssec.sh | grep "#####"
+  fi
   chmod -x test-opendnssec.sh
+fi
+
+if [ -n $SPECIFIC_TEST ] ; then
+  echo "Testing OpenDNSSEC. test: $SPECIFIC_TEST"
+  cd $WORKSPACE_ROOT/OpenDNSSEC/testing/test-cases.d/$SPECIFIC_TEST
+  export INSTALL_TAG=local-test
+  export WORKSPACE=`pwd`
+  export SVN_REVISION=1
+  source ../../lib.sh
+  source ../../functions-opendnssec.sh
+  init
+  log_cleanup && syslog_cleanup
+  ods_find_softhsm_module
+  ods_pre_test
+  syslog_trace
+  source ./test.sh
 fi
 
 if [ $RUN_DAILY_TESTS -eq 1 ] ; then
