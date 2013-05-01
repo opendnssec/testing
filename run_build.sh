@@ -27,7 +27,6 @@ export PATCH_OPENDNSSEC=""
 export RUN_TESTS=0
 export RUN_DAILY_TESTS=0
 export LOUD=0
-export SPECIFIC_TEST=""
 
 usage () {
     echo
@@ -215,7 +214,7 @@ if [ $RUN_TESTS -eq 1 ] ; then
   chmod -x test-opendnssec.sh
 fi
 
-if [ -n $SPECIFIC_TEST ] ; then
+if [ -n "$SPECIFIC_TEST" ] ; then
   echo "Testing OpenDNSSEC. test: $SPECIFIC_TEST"
   cd $WORKSPACE_ROOT/OpenDNSSEC/testing/test-cases.d/$SPECIFIC_TEST
   export INSTALL_TAG=local-test
