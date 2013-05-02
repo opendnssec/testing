@@ -97,7 +97,7 @@ done
 [ ! -f $PATCH_OPENDNSSEC ] && echo "Error: patch file $PATCH_OPENDNSSEC does not exist" && usage
 
 # Create workspace and checkout source
-[ $BLAT -eq 1 ] && rm -rf $WORKSPACE_ROOT/root/
+[ $BLAT -eq 1 ] && rm -rf $WORKSPACE_ROOT
 mkdir -p $WORKSPACE_ROOT
 cd $WORKSPACE_ROOT
 if [ $PREVENT_CO -eq 0 ] ; then
