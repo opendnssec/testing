@@ -132,7 +132,7 @@ cd $WORKSPACE_ROOT/OpenDNSSEC/testing
 export WORKSPACE=`pwd`
 export SVN_REVISION=1
 chmod +x build-ldns.sh
-./build-ldns.sh 2>&1 | tee ~/build-ldns.log
+./build-ldns.sh 2>&1 | tee $WORKSPACE_ROOT/build-ldns.log
 chmod -x build-ldns.sh
 
 # If requested build sqlite3 3.7.X (At time of writing this was 3.7.16.2)
@@ -142,7 +142,7 @@ if [ $BUILD37X -eq 1 ] ; then
   export WORKSPACE=`pwd`
   export SVN_REVISION=1
   chmod +x build-sqlite3.sh
-  ./build-sqlite3.sh 2>&1 | tee ~/build-sqlite3.log
+  ./build-sqlite3.sh 2>&1 | tee $WORKSPACE_ROOT/build-sqlite3.log
   chmod -x build-ldns.sh
 fi
 
@@ -161,11 +161,11 @@ if [ $BUILD37X -eq 1 ] ; then
   sed 's|--with-sqlite3=.*\&\&|\&\&|' testing/build-softhsm.sh \
     | sed 's|../configure --prefix|../configure --with-sqlite3=\"\$INSTALL_ROOT\" --prefix|' > testing/build-softhsm-7.sh
   chmod +x testing/build-softhsm-7.sh
-  ./testing/build-softhsm-7.sh 2>&1 | tee ~/build-softhsm-7.log
+  ./testing/build-softhsm-7.sh 2>&1 | tee $WORKSPACE_ROOT/build-softhsm-7.log
   chmod -x testing/build-softhsm-7.sh
 else
   chmod +x testing/build-softhsm.sh
-  ./testing/build-softhsm.sh 2>&1 | tee ~/build-softhsm.log
+  ./testing/build-softhsm.sh 2>&1 | tee $WORKSPACE_ROOT/build-softhsm.log
   chmod -x testing/build-softhsm.sh
 fi
 
@@ -184,16 +184,16 @@ if [ $BUILD37X -eq 1 ] ; then
   sed 's|--with-sqlite3=.*\&\&|\&\&|' testing/build-opendnssec.sh \
     | sed 's|../configure --prefix|../configure --with-sqlite3=\"\$INSTALL_ROOT\" --prefix|' > testing/build-opendnssec-7.sh
   chmod +x testing/build-opendnssec-7.sh
-  ./testing/build-opendnssec-7.sh 2>&1 | tee ~/build-opendnssec-7.log
+  ./testing/build-opendnssec-7.sh 2>&1 | tee $WORKSPACE_ROOT/build-opendnssec-7.log
   chmod -x testing/build-opendnssec-7.sh
 else
   if [ $BUILD_MYSQL -eq 1 ] ; then
     chmod +x testing/build-opendnssec-mysql.sh
-    ./testing/build-opendnssec-mysql.sh 2>&1 | tee ~/build-opendnssec-mysql.log
+    ./testing/build-opendnssec-mysql.sh 2>&1 | tee $WORKSPACE_ROOT/build-opendnssec-mysql.log
     chmod -x testing/build-opendnssec-mysql.sh
   else
     chmod +x testing/build-opendnssec.sh
-    ./testing/build-opendnssec.sh 2>&1 | tee ~/build-opendnssec.log
+    ./testing/build-opendnssec.sh 2>&1 | tee $WORKSPACE_ROOT/build-opendnssec.log
     chmod -x testing/build-opendnssec.sh
   fi
 fi
