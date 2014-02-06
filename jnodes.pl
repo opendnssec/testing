@@ -22,8 +22,8 @@ Getopt::Long::GetOptions(
     'token=s' => \$token
 ) or Pod::Usage::pod2usage(2);
 Pod::Usage::pod2usage(1) if $help;
-my ($cmd, $node, $pattern) = @ARGV;
-unless ($user and $token and $cmd =~ /^(?:add|remove|search|rename)$/o and $node and $pattern) {
+my ($cmd, $pattern) = @ARGV;
+unless ($user and $token and $cmd =~ /^(?:add|remove|search|rename|backup)$/o and $pattern) {
     Pod::Usage::pod2usage(1);
 }
 
@@ -45,51 +45,42 @@ foreach my $job (@{$jenkins->{jobs}}) {
             die;
         }
 
-        my $dom = XML::LibXML->load_xml(string => $config);
-        unless ($dom->findnodes('/matrix-project')) {
-            next;
-        }
-        
-        my ($values) = ($dom->findnodes('/matrix-project/axes/hudson.matrix.LabelAxis/values'));
-        unless (defined $values) {
-            my $axis = $dom->findnodes('/matrix-project/axes/hudson.matrix.LabelAxis');
-            unless (defined $axis) {
-                my $axes = $dom->findnodes('/matrix-project/axes');
-                unless (defined $axes) {
-                    my $matrix = $dom->findnodes('/matrix-project');
-                    unless (defined $matrix) {
-                        die;
-                    }
-                    $matrix->appendChild(($axes = XML::LibXML::Element->new('axes')));
-                }
-                $axes->appendChild(($axis = XML::LibXML::Element->new('hudson.matrix.LabelAxis')));
-            }
-            $axis->appendChild(($values = XML::LibXML::Element->new('values')));
-        }
-        
-        my $found;
-        foreach my $string ($values->findnodes('string')) {
-            if ($string->textContent eq $node) {
-                $found = $string;
-            }
-        }
-        
-        my $changed;
         if ($cmd eq 'add') {
+            unless ($ARGV[2]) {
+                die;
+            }
+            my ($dom, $values, $found) = FindNode($config, $ARGV[2]);
+            unless ($values) {
+                next;
+            }
             unless ($found) {
-                print '  + ', $node, "\n";
-                $values->appendTextChild('string', $node);
-                $changed = 1;
+                print '  + ', $ARGV[2], "\n";
+                $values->appendTextChild('string', $ARGV[2]);
+                SaveXML($job, $dom);
             }
         }
         elsif ($cmd eq 'remove') {
+            unless ($ARGV[2]) {
+                die;
+            }
+            my ($dom, $values, $found) = FindNode($config, $ARGV[2]);
+            unless ($values) {
+                next;
+            }
             if ($found) {
                 print '  - ', $found->textContent, "\n";
                 $values->removeChild($found);
-                $changed = 1;
+                SaveXML($job, $dom);
             }
         }
         elsif ($cmd eq 'search') {
+            unless ($ARGV[2]) {
+                die;
+            }
+            my ($dom, $values, $found) = FindNode($config, $ARGV[2]);
+            unless ($values) {
+                next;
+            }
             if ($found) {
                 print '  ', $found->textContent, "\n";
             }
@@ -98,29 +89,83 @@ foreach my $job (@{$jenkins->{jobs}}) {
             unless ($ARGV[3]) {
                 die;
             }
+            my ($dom, $values, $found) = FindNode($config, $ARGV[2]);
+            unless ($values) {
+                next;
+            }
             if ($found) {
                 print '  ', $found->textContent, ' => ', $ARGV[3], "\n";
                 $values->removeChild($found);
                 $values->appendTextChild('string', $ARGV[3]);
-                $changed = 1;
+                SaveXML($job, $dom);
+            }
+        }
+        elsif ($cmd eq 'backup') {
+            unless (-d $ARGV[2]) {
+                die;
+            }
+            my $directory = $ARGV[2];
+            $directory =~  s/\/+$//o;
+            unless (open(XML, '>', $directory.'/'.$job->{name}.'.xml')
+                and print XML $config
+                and close(XML))
+            {
+                die;
             }
         }
         else {
             die;
         }
-        
-        if ($changed) {
-            my $post = JenkinsRequest($job->{url}.'config.xml',
-                method => 'POST',
-                no_json => 1,
-                body => $dom->toString);
-            unless (defined $post) {
-                die;
-            }
-        }
     }
 }
 exit(0);
+
+sub SaveXML {
+    my ($job, $dom) = @_;
+    
+    my $post = JenkinsRequest($job->{url}.'config.xml',
+        method => 'POST',
+        no_json => 1,
+        body => $dom->toString);
+    unless (defined $post) {
+        die;
+    }
+}
+
+sub FindNode {
+    my ($config, $node) = @_;
+    my $dom = XML::LibXML->load_xml(string => $config);
+
+    unless ($dom->findnodes('/matrix-project')) {
+        return ($dom);
+    }
+    
+    my ($values) = ($dom->findnodes('/matrix-project/axes/hudson.matrix.LabelAxis/values'));
+    unless (defined $values) {
+        my $axis = $dom->findnodes('/matrix-project/axes/hudson.matrix.LabelAxis');
+        unless (defined $axis) {
+            my $axes = $dom->findnodes('/matrix-project/axes');
+            unless (defined $axes) {
+                my $matrix = $dom->findnodes('/matrix-project');
+                unless (defined $matrix) {
+                    die;
+                }
+                $matrix->appendChild(($axes = XML::LibXML::Element->new('axes')));
+            }
+            $axes->appendChild(($axis = XML::LibXML::Element->new('hudson.matrix.LabelAxis')));
+        }
+        $axis->appendChild(($values = XML::LibXML::Element->new('values')));
+    }
+
+    my $found;
+    foreach my $string ($values->findnodes('string')) {
+        if ($string->textContent eq $node) {
+            $found = $string;
+        }
+    }
+    
+    return ($dom, $values, $found);
+}
 
 sub JenkinsRequest {
     my $url = shift;
@@ -175,6 +220,10 @@ exec - Description
 
 =head1 SYNOPSIS
 
-exec --user <user> --token <token> --base <base url> <add|remove|search|rename> <node> <job pattern> [...]
+exec --user <user> --token <token> <add|remove|search> <job pattern> <node>
+
+exec --user <user> --token <token> <rename> <job pattern> <old node> <new node>
+
+exec --user <user> --token <token> <backup> <job pattern> <destination directory>
 
 =cut
