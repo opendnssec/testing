@@ -3,6 +3,7 @@
 use common::sense;
 use Carp;
 
+use Scalar::Util qw(blessed);
 use Pod::Usage ();
 use Getopt::Long ();
 use JSON::XS ();
@@ -46,43 +47,57 @@ foreach my $job (@{$jenkins->{jobs}}) {
         }
 
         if ($cmd eq 'add') {
-            unless ($ARGV[2]) {
-                die;
+            my (undef, undef, @nodes) = @ARGV;
+            my ($dom, $values, $found, $changed);
+            
+            foreach my $node (@nodes) {
+                ($dom, $values, $found) = FindNode($dom ? $dom : $config, $node);
+                unless ($values) {
+                    next;
+                }
+                unless ($found) {
+                    print '  + ', $node, "\n";
+                    $values->appendTextChild('string', $node);
+                    $changed = 1;
+                }
             }
-            my ($dom, $values, $found) = FindNode($config, $ARGV[2]);
-            unless ($values) {
-                next;
-            }
-            unless ($found) {
-                print '  + ', $ARGV[2], "\n";
-                $values->appendTextChild('string', $ARGV[2]);
+            
+            if ($dom and $changed) {
                 SaveXML($job, $dom);
             }
         }
         elsif ($cmd eq 'remove') {
-            unless ($ARGV[2]) {
-                die;
+            my (undef, undef, @nodes) = @ARGV;
+            my ($dom, $values, $found, $changed);
+            
+            foreach my $node (@nodes) {
+                ($dom, $values, $found) = FindNode($dom ? $dom : $config, $node);
+                unless ($values) {
+                    next;
+                }
+                if ($found) {
+                    print '  - ', $found->textContent, "\n";
+                    $values->removeChild($found);
+                    $changed = 1;
+                }
             }
-            my ($dom, $values, $found) = FindNode($config, $ARGV[2]);
-            unless ($values) {
-                next;
-            }
-            if ($found) {
-                print '  - ', $found->textContent, "\n";
-                $values->removeChild($found);
+            
+            if ($dom and $changed) {
                 SaveXML($job, $dom);
             }
         }
         elsif ($cmd eq 'search') {
-            unless ($ARGV[2]) {
-                die;
-            }
-            my ($dom, $values, $found) = FindNode($config, $ARGV[2]);
-            unless ($values) {
-                next;
-            }
-            if ($found) {
-                print '  ', $found->textContent, "\n";
+            my (undef, undef, @nodes) = @ARGV;
+            my ($dom, $values, $found);
+            
+            foreach my $node (@nodes) {
+                ($dom, $values, $found) = FindNode($dom ? $dom : $config, $node);
+                unless ($values) {
+                    next;
+                }
+                if ($found) {
+                    print '  ', $found->textContent, "\n";
+                }
             }
         }
         elsif ($cmd eq 'rename') {
@@ -134,8 +149,8 @@ sub SaveXML {
 
 sub FindNode {
     my ($config, $node) = @_;
-    my $dom = XML::LibXML->load_xml(string => $config);
-
+    my $dom = blessed $config ? $config : XML::LibXML->load_xml(string => $config);
+    
     unless ($dom->findnodes('/matrix-project')) {
         return ($dom);
     }
@@ -220,7 +235,7 @@ exec - Description
 
 =head1 SYNOPSIS
 
-exec --user <user> --token <token> <add|remove|search> <job pattern> <node>
+exec --user <user> --token <token> <add|remove|search> <job pattern> <node ... node>
 
 exec --user <user> --token <token> <rename> <job pattern> <old node> <new node>
 
