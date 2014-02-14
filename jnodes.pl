@@ -24,7 +24,7 @@ Getopt::Long::GetOptions(
 ) or Pod::Usage::pod2usage(2);
 Pod::Usage::pod2usage(1) if $help;
 my ($cmd, $pattern) = @ARGV;
-unless ($user and $token and $cmd =~ /^(?:add|remove|search|rename|backup)$/o and $pattern) {
+unless ($user and $token and $cmd =~ /^(?:add|remove|search|rename|backup|restore|delete-job)$/o and $pattern) {
     Pod::Usage::pod2usage(1);
 }
 
@@ -128,6 +128,51 @@ foreach my $job (@{$jenkins->{jobs}}) {
                 die;
             }
         }
+        elsif ($cmd eq 'restore') {
+            unless (-d $ARGV[2]) {
+                die;
+            }
+            my $directory = $ARGV[2];
+            $directory =~  s/\/+$//o;
+            if (-f $directory.'/'.$job->{name}.'.xml') {
+                print '  restoring', "\n";
+                unless (open(XML, '<', $directory.'/'.$job->{name}.'.xml')) {
+                    die;
+                }
+                my $config;
+                while(<XML>) {
+                    $config .= $_;
+                }
+                close(XML);
+                unless ($config) {
+                    die;
+                }
+                SaveXML($job, $config);
+                print '  restored', "\n";
+            }
+        }
+        elsif ($cmd eq 'delete-job') {
+            my $post = JenkinsRequest($job->{url}.'doWipeOutWorkspace?',
+                method => 'POST',
+                no_json => 1);
+            if ($@ == 302) {
+                undef $@;
+                $post = 1;
+            }
+            unless (defined $post) {
+                die;
+            }
+            my $post = JenkinsRequest($job->{url}.'doDelete?',
+                method => 'POST',
+                no_json => 1);
+            if ($@ == 302) {
+                undef $@;
+                $post = 1;
+            }
+            unless (defined $post) {
+                die;
+            }
+        }
         else {
             die;
         }
@@ -141,7 +186,7 @@ sub SaveXML {
     my $post = JenkinsRequest($job->{url}.'config.xml',
         method => 'POST',
         no_json => 1,
-        body => $dom->toString);
+        body => blessed $dom ? $dom->toString : $dom);
     unless (defined $post) {
         die;
     }
@@ -208,6 +253,7 @@ sub JenkinsRequest {
     my $response = $ua->request($request);
     unless ($response->is_success) {
         print STDERR $response->status_line, "\n";
+        $@ = $response->code;
         return;
     }
     
@@ -239,6 +285,8 @@ exec --user <user> --token <token> <add|remove|search> <job pattern> <node ... n
 
 exec --user <user> --token <token> <rename> <job pattern> <old node> <new node>
 
-exec --user <user> --token <token> <backup> <job pattern> <destination directory>
+exec --user <user> --token <token> <backup|restore> <job pattern> <destination directory>
+
+exec --user <user> --token <token> <delete-job> <job pattern>
 
 =cut
