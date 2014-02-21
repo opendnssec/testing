@@ -24,8 +24,48 @@ Getopt::Long::GetOptions(
 ) or Pod::Usage::pod2usage(2);
 Pod::Usage::pod2usage(1) if $help;
 my ($cmd, $pattern) = @ARGV;
-unless ($user and $token and $cmd =~ /^(?:add|remove|search|rename|backup|restore|delete-job)$/o and $pattern) {
+unless ($user and $token and $cmd =~ /^(?:add|remove|search|rename|backup|restore|delete-job|create)$/o and $pattern) {
     Pod::Usage::pod2usage(1);
+}
+
+if ($cmd eq 'create') {
+    $pattern =~ s/\/+$//o;
+    unless (-d $pattern and opendir(DIR, $pattern)) {
+        die;
+    }
+
+    while((my $entry = readdir(DIR))) {
+        unless (-f $pattern.'/'.$entry and $entry =~ /\.xml$/o) {
+            next;
+        }
+        my $name = $entry;
+        $name =~ s/\.xml$//o;
+        
+        print '+ ', $name, "\n";
+        unless (open(XML, '<', $pattern.'/'.$entry)) {
+            die;
+        }
+        my $config;
+        while(<XML>) {
+            $config .= $_;
+        }
+        close(XML);
+        unless ($config) {
+            die;
+        }
+        my $post = JenkinsRequest('createItem?name='.$name,
+            headers => {
+                'Content-Type' => 'text/xml'
+            },
+            method => 'POST',
+            no_json => 1,
+            body => $config);
+        unless (defined $post) {
+            die;
+        }
+    }
+    close(DIR);
+    exit(0);
 }
 
 my $jenkins = JenkinsRequest('');
@@ -288,5 +328,7 @@ exec --user <user> --token <token> <rename> <job pattern> <old node> <new node>
 exec --user <user> --token <token> <backup|restore> <job pattern> <destination directory>
 
 exec --user <user> --token <token> <delete-job> <job pattern>
+
+exec --user <user> --token <token> <create> <job xml directory>
 
 =cut
