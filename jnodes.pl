@@ -15,12 +15,14 @@ use XML::LibXML ();
 my $help = 0;
 my $user;
 my $token;
+my $base_url = 'https://jenkins.opendnssec.org/';
 my $JSON = JSON::XS->new;
 
 Getopt::Long::GetOptions(
     'help|?' => \$help,
     'user=s' => \$user,
-    'token=s' => \$token
+    'token=s' => \$token,
+    'base-url:s' => \$base_url
 ) or Pod::Usage::pod2usage(2);
 Pod::Usage::pod2usage(1) if $help;
 my ($cmd, $pattern) = @ARGV;
@@ -273,7 +275,7 @@ sub JenkinsRequest {
     my $method = delete $args{method} || 'GET';
     my $no_json = delete $args{no_json};
     
-    $url =~ s/^https:\/\/jenkins.opendnssec.org\///o;
+    $url =~ s/^$base_url//;
     unless ($url =~ /\?/o) {
         $url =~ s/\/+$//o;
         $url .= '/api/json';
@@ -284,7 +286,7 @@ sub JenkinsRequest {
     my $ua = LWP::UserAgent->new;
     $ua->agent('curl/7.32.0');
     
-    my $request = HTTP::Request->new($method => 'https://jenkins.opendnssec.org/'.$url);
+    my $request = HTTP::Request->new($method => $base_url.$url);
     $request->header(%{$args{headers}});
     if (exists $args{body}) {
         $request->content($args{body});
