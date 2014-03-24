@@ -30,6 +30,10 @@ unless ($user and $token and $cmd =~ /^(?:add|remove|search|rename|backup|restor
     Pod::Usage::pod2usage(1);
 }
 
+if ($base_url !~ /\/$/o) {
+    $base_url .= '/';
+}
+
 if ($cmd eq 'create') {
     $pattern =~ s/\/+$//o;
     unless (-d $pattern and opendir(DIR, $pattern)) {
@@ -274,16 +278,18 @@ sub JenkinsRequest {
     my %args = ( @_ );
     my $method = delete $args{method} || 'GET';
     my $no_json = delete $args{no_json};
-    
+
     $url =~ s/^$base_url//;
     unless ($url =~ /\?/o) {
-        $url =~ s/\/+$//o;
-        $url .= '/api/json';
+        if ($url !~ /\/$/o) {
+            $url .= '/';
+        }
+        $url .= 'api/json';
     }
     $args{headers}->{Authorization} = 'Basic '.MIME::Base64::encode($user.':'.$token, '');
     
-    #print 'JenkinsRequest ', $method, ' https://jenkins.opendnssec.org/', $url, "\n";
-    my $ua = LWP::UserAgent->new;
+    #print 'JenkinsRequest ', $method, ' ', $base_url, $url, "\n";
+    my $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });
     $ua->agent('curl/7.32.0');
     
     my $request = HTTP::Request->new($method => $base_url.$url);
